@@ -195,6 +195,7 @@ th{color:var(--text2);font-weight:600;font-size:11px;text-transform:uppercase}
     <button class="nav-btn" data-tab="workout">💪 Workout</button>
     <button class="nav-btn" data-tab="ai">🤖 AI Doubt</button>
     <button class="nav-btn" data-tab="progress">📈 Progress</button>
+    <button class="nav-btn" data-tab="revision">📝 Quick Revision</button>
     <button class="nav-btn" data-tab="certificate">🎓 Certificate</button>
     <button class="nav-btn" data-tab="settings">⚙️ Settings</button>
   </div>
@@ -435,6 +436,21 @@ th{color:var(--text2);font-weight:600;font-size:11px;text-transform:uppercase}
     </div>
   </div>
 
+  <!-- REVISION -->
+  <div class="panel" id="panel-revision">
+    <div class="card">
+      <h2>📝 Quick Revision - All Study Notes</h2>
+      <p class="text-muted mb-16">Complete study material for all 13 topics. Scroll, read, revise.</p>
+      <div id="subjectRevFilter" class="flex mb-16" style="gap:6px">
+        <button class="btn btn-sm btn-outline active" data-rev="all" onclick="filterRevision('all',this)">All</button>
+        <button class="btn btn-sm btn-outline" data-rev="physics" onclick="filterRevision('physics',this)">Physics</button>
+        <button class="btn btn-sm btn-outline" data-rev="chemistry" onclick="filterRevision('chemistry',this)">Chemistry</button>
+        <button class="btn btn-sm btn-outline" data-rev="maths" onclick="filterRevision('maths',this)">Maths</button>
+      </div>
+      <div id="revisionContent"></div>
+    </div>
+  </div>
+
   <!-- CERTIFICATE -->
   <div class="panel" id="panel-certificate">
     <div class="card">
@@ -524,19 +540,19 @@ const DEFAULT_DATA = {
   user: { name: 'MUHAMMED RIHAN T', regNo: '25371123' },
   settings: { theme: 'dark', strictness: 'grandparent', geminiKey: '', groqKey: '' },
   topics: [
-    { id:'m1',subject:'maths',name:'Linear Programming',pages:'SCERT +2 Pg 509-518',marks:6,status:'pending',notes:'' },
-    { id:'m2',subject:'maths',name:'Matrices',pages:'Pg 60-68',marks:8,status:'pending',notes:'' },
-    { id:'m3',subject:'maths',name:'Determinants',pages:'Pg 90-95',marks:8,status:'pending',notes:'' },
-    { id:'m4',subject:'maths',name:'Vectors',pages:'Pg 404-410',marks:4,status:'pending',notes:'' },
-    { id:'p1',subject:'physics',name:'Ray Optics',pages:'SCERT +2 Pg 309-320',marks:8,status:'pending',notes:'' },
-    { id:'p2',subject:'physics',name:'Wave Optics',pages:'Pg 340-345',marks:6,status:'pending',notes:'' },
-    { id:'p3',subject:'physics',name:'Atoms + Nuclei',pages:'Pg 390-395',marks:6,status:'pending',notes:'' },
-    { id:'p4',subject:'physics',name:'Semiconductors',pages:'Pg 460-465',marks:6,status:'pending',notes:'' },
-    { id:'p5',subject:'physics',name:'Units & Dimensions',pages:'Pg 2-5',marks:4,status:'pending',notes:'' },
-    { id:'c1',subject:'chemistry',name:'Solutions',pages:'SCERT +2 Pg 33-38',marks:6,status:'pending',notes:'' },
-    { id:'c2',subject:'chemistry',name:'Electrochemistry',pages:'Pg 65-70',marks:6,status:'pending',notes:'' },
-    { id:'c3',subject:'chemistry',name:'Chemical Kinetics',pages:'Pg 90-95',marks:6,status:'pending',notes:'' },
-    { id:'c4',subject:'chemistry',name:'d & f Block Elements',pages:'Pg 210-215',marks:6,status:'pending',notes:'' }
+    { id:'m1',subject:'maths',name:'Linear Programming',pages:'SCERT +2 Pg 509-518',marks:6,status:'pending',notes:'📐 LINEAR PROGRAMMING - 6 marks\n═══════════════════════════\n\n🎯 3 STEPS TO SOLVE LPP:\n1. Formulate: Identify objective Z = ax+by and constraints\n2. Graph: Plot constraints, shade feasible region\n3. Evaluate: Find corner points, put in Z, pick max/min\n\n📌 KEY TERMS:\n• Objective Function: Z = ax + by (to max/min)\n• Constraints: Linear inequalities (x+y ≤ 4, x≥0, y≥0)\n• Feasible Region: Area satisfying ALL constraints\n• Optimal Solution: Corner point giving max/min Z\n\n📝 EXAMPLE (SAY 2022):\nMax Z = 3x+4y, x+y ≤ 4, x≥0, y≥0\nCorner points: (0,0)→0, (4,0)→12, (0,4)→16, (2,2)→14\nMax Z = 16 at (0,4)\n\n⚠️ IMPORTANT: Always check all corner points!\nGraph constraints one by one. Shade the common region.' },
+    { id:'m2',subject:'maths',name:'Matrices',pages:'Pg 60-68',marks:8,status:'pending',notes:'📐 MATRICES - 8 marks\n═══════════════════════\n\n📌 TYPES OF MATRICES:\n• Row: [1 2 3] 1×3\n• Column: [1;2;3] 3×1\n• Square: 3×3 (same rows & cols)\n• Diagonal: Non-zero only on diagonal\n• Identity: I = [[1,0],[0,1]]\n• Zero: All elements = 0\n\n📝 OPERATIONS:\n• Addition: A+B (same order, add elements)\n• Multiplication: A×B (cols of A = rows of B)\n• Transpose: Aᵀ (rows ↔ columns)\n\n🔑 INVERSE OF 2×2 MATRIX:\nA = [[a,b],[c,d]]\n|A| = ad - bc\nA⁻¹ = (1/|A|) × [[d,-b],[-c,a]]\n\n📌 PROPERTIES:\n• (Aᵀ)ᵀ = A\n• (AB)ᵀ = BᵀAᵀ\n• (AB)⁻¹ = B⁻¹A⁻¹\n• AA⁻¹ = A⁻¹A = I\n\n⚠️ 4-mark Q: Find inverse using adjoint method - COMES EVERY YEAR!' },
+    { id:'m3',subject:'maths',name:'Determinants',pages:'Pg 90-95',marks:8,status:'pending',notes:'📐 DETERMINANTS - 8 marks\n═══════════════════════════\n\n🔑 FORMULA FOR 2×2:\ndet([[a,b],[c,d]]) = ad - bc\n\n🔑 FORMULA FOR 3×3:\n|A| = a₁₁(a₂₂a₃₃-a₂₃a₃₂) - a₁₂(a₂₁a₃₃-a₂₃a₃₁) + a₁₃(a₂₁a₃₂-a₂₂a₃₁)\n\n📌 AREA OF TRIANGLE:\nArea = ½|x₁(y₂-y₃)+x₂(y₃-y₁)+x₃(y₁-y₂)|\nIf area = 0 → points are COLLINEAR\n\n📝 PROPERTIES:\n• det(Aᵀ) = det(A)\n• det(AB) = det(A)×det(B)\n• If two rows swapped → det changes sign\n• If two rows identical → det = 0\n\n🔑 ADJOINT:\nadj(A) = transpose of cofactor matrix\nA⁻¹ = adj(A)/|A|\n\n⚠️ CRAMER\'S RULE for solving equations:\nx = Dx/D, y = Dy/D\n\n⚠️ 8 marks: Adjoint + Inverse + Area of triangle - HIGH WEIGHTAGE!' },
+    { id:'m4',subject:'maths',name:'Vectors',pages:'Pg 404-410',marks:4,status:'pending',notes:'📐 VECTORS - 4 marks\n═══════════════════════\n\n📌 REPRESENTATION:\nVector = aî + bĵ + ck̂ or (a,b,c)\nMagnitude |a| = √(a²+b²+c²)\n\n📝 DOT PRODUCT (scalar):\na·b = |a||b|cosθ = a₁b₁+a₂b₂+a₃b₃\nIf a·b = 0 → vectors are perpendicular\n\n📝 CROSS PRODUCT (vector):\na×b = |a||b|sinθ n̂\na×b = determinant of [[î,ĵ,k̂],[a₁,a₂,a₃],[b₁,b₂,b₃]]\n\n🔑 PROJECTION:\nProjection of a on b = (a·b)/|b|\n\n📌 SECTION FORMULA:\nIf P divides AB in ratio m:n\nP = (mb + na)/(m+n)\n\n⚠️ 4-mark Q: Dot product, projection - EASY marks wasted!' },
+    { id:'p1',subject:'physics',name:'Ray Optics',pages:'SCERT +2 Pg 309-320',marks:8,status:'pending',notes:'⚡ RAY OPTICS - 8 marks (HIGHEST WEIGHTAGE!)\n═══════════════════════════════════════════\n\n🔑 MIRROR FORMULA (CRITICAL):\n1/f = 1/v + 1/u\nSign convention: All distances from pole\n• Concave mirror: f negative (-ve)\n• Convex mirror: f positive (+ve)\n• Real image: v negative | Virtual: v positive\n\n📝 MAGNIFICATION:\nm = -v/u = hᵢ/hₒ\n|m|>1 → enlarged | |m|<1 → diminished\n\n🔑 LENS MAKER FORMULA:\n1/f = (n₂/n₁-1)(1/R₁-1/R₂)\n\n📌 TOTAL INTERNAL REFLECTION:\nsin i꜀ = n₂/n₁ (from denser to rarer)\nApplications: Optical fibers, mirage\n\n📝 REFRACTION THROUGH PRISM:\nδ = i + e - A (deviation angle)\nμ = sin((A+δₘ)/2)/sin(A/2)\n\n⚠️ 2024: Mirror formula numerical - 4 marks\n⚠️ Draw ray diagrams clearly - diagrams get marks!' },
+    { id:'p2',subject:'physics',name:'Wave Optics',pages:'Pg 340-345',marks:6,status:'pending',notes:'⚡ WAVE OPTICS - 6 marks\n═══════════════════════════\n\n📌 HUYGENS PRINCIPLE:\nEvery point on wavefront acts as secondary source\nNew wavefront = envelope of secondary wavelets\n\n📝 INTERFERENCE (Young\'s Double Slit):\nConstructive: d sinθ = nλ (bright fringe)\nDestructive: d sinθ = (n+½)λ (dark fringe)\n\n🔑 FRINGE WIDTH:\nβ = λD/d\n• β ∝ λ (longer λ = wider fringes)\n• β ∝ D (farther screen = wider fringes)\n• β ∝ 1/d (closer slits = wider fringes)\n\n📌 DIFFRACTION:\nSingle slit: Central max + alternating min/max\nCondition for minima: a sinθ = nλ\n\n⚠️ Difference between Interference & Diffraction:\n• Interference: Equal width, equal intensity\n• Diffraction: Central max widest, intensity decreases' },
+    { id:'p3',subject:'physics',name:'Atoms + Nuclei',pages:'Pg 390-395',marks:6,status:'pending',notes:'⚡ ATOMS + NUCLEI - 6 marks\n════════════════════════════\n\n📌 BOHR\'S MODEL:\n• Electrons in stationary orbits (no energy loss)\n• Angular momentum: mvr = nh/2π\n• Energy: Eₙ = -13.6/n² eV\n• Radius: rₙ = 0.53n²/Z Å\n\n🔑 RADIOACTIVE DECAY:\nN = N₀e^(-λt)\nλ = decay constant\n\n📝 HALF-LIFE (CRITICAL!):\nT½ = 0.693/λ\nAfter n half-lives: N = N₀(½)ⁿ\n\n📝 BINDING ENERGY:\nBE = Δm × c² (mass defect × c²)\nHigher BE = more stable nucleus\n\n📌 NUCLEAR FISSION:\nHeavy nucleus splits → energy released\nU-235 + n → Ba-141 + Kr-92 + 3n + energy\n\n📌 NUCLEAR FUSION:\nLight nuclei combine → energy released\nH + H → He + energy (Sun\'s energy)\n\n⚠️ SAY 2023: Half-life problem - 3 marks!\n⚠️ Learn: T½ formula + binding energy graph' },
+    { id:'p4',subject:'physics',name:'Semiconductors',pages:'Pg 460-465',marks:6,status:'pending',notes:'⚡ SEMICONDUCTORS - 6 marks\n═════════════════════════════\n\n📌 P-N JUNCTION:\n• p-type: Holes majority (+ve)\n• n-type: Electrons majority (-ve)\n• Depletion region: No mobile charges\n• Barrier potential: ~0.3V (Ge), ~0.7V (Si)\n\n📝 FORWARD BIAS:\np positive, n negative → current flows\nBarrier potential decreases\n\n📝 REVERSE BIAS:\np negative, n positive → no current\nBarrier potential increases\n(Small leakage current exists)\n\n🔑 TRANSISTOR AS AMPLIFIER (Common Emitter):\n• Input: Base-emitter | Output: Collector-emitter\n• Current gain β = Ic/Ib\n• Voltage gain Av = -βRc/Rb\n• Phase reversal: 180° between input & output\n\n📌 LOGIC GATES (Basic):\n• AND: Y = A·B (both 1 → 1)\n• OR: Y = A+B (any 1 → 1)\n• NOT: Y = A̅ (invert)\n• NAND: Y = A·B̅ (universal gate)\n• NOR: Y = A+B̅ (universal gate)\n\n⚠️ 2022: Transistor amplifier diagram + gain - 6 marks!\n⚠️ Draw diagrams neatly!' },
+    { id:'p5',subject:'physics',name:'Units & Dimensions',pages:'Pg 2-5',marks:4,status:'pending',notes:'⚡ UNITS & DIMENSIONS - 4 marks\n════════════════════════════════\n\n🔑 7 SI BASE UNITS (CRITICAL - MCQ):\n1. Length → meter (m)\n2. Mass → kilogram (kg)\n3. Time → second (s)\n4. Current → ampere (A)\n5. Temperature → kelvin (K)\n6. Amount → mole (mol)\n7. Luminous intensity → candela (cd)\n\n📝 DIMENSIONAL FORMULAS:\n• Force: [MLT⁻²]\n• Energy/Work: [ML²T⁻²]\n• Power: [ML²T⁻³]\n• Pressure: [ML⁻¹T⁻²]\n• Velocity: [LT⁻¹]\n• Acceleration: [LT⁻²]\n\n📌 USES OF DIMENSIONS:\n• Check formula correctness\n• Convert units between systems\n• Derive relations between quantities\n\n📝 LIMITATIONS:\n• Cannot find dimensionless constants\n• Cannot derive trig/log formulas\n\n⚠️ 2024: Name 7 SI units - 4 marks EASY!\n⚠️ LEARN: All 7 base units with symbols' },
+    { id:'c1',subject:'chemistry',name:'Solutions',pages:'SCERT +2 Pg 33-38',marks:6,status:'pending',notes:'🧪 SOLUTIONS - 6 marks\n════════════════════════\n\n📌 CONCENTRATION TERMS:\n• Mole fraction (x): nₐ/(nₐ+nᵦ)\n• Molarity (M): moles of solute/L of solution\n• Molality (m): moles of solute/kg of solvent\n• Normality (N): gram equivalents/L of solution\n\n📝 RAOULT\'S LAW:\nPₛₒₗᵤₜᵢₒₙ = xₛₒₗᵥₑₙₜ × P°ₛₒₗᵥₑₙₜ\nFor volatile solutions: Pₜₒₜₐₗ = xₐP°ₐ + xᵦP°ᵦ\n\n📌 HENRY\'S LAW:\nm = kP (solubility ∝ pressure)\nApplications: Carbonated drinks, scuba diving\n\n📝 COLLIGATIVE PROPERTIES:\n1. Vapor pressure lowering\n2. Boiling point elevation: ΔTb = Kb×m\n3. Freezing point depression: ΔTf = Kf×m\n4. Osmotic pressure: π = iCRT\n\n📌 VAN\'T HOFF FACTOR:\ni = actual particles/formula units\n• NaCl → i=2 | CaCl₂ → i=3\n• Association: i<1 | Dissociation: i>1\n\n⚠️ Mole fraction formula ALWAYS comes - 3 marks!' },
+    { id:'c2',subject:'chemistry',name:'Electrochemistry',pages:'Pg 65-70',marks:6,status:'pending',notes:'🧪 ELECTROCHEMISTRY - 6 marks\n══════════════════════════════\n\n🔑 NERNST EQUATION (COMES EVERY YEAR!):\nAt 25°C: E = E° - 0.0591/n × log Q\nWhere Q = [Product]/[Reactant]\n\n📝 CELL REPRESENTATION:\nZn | Zn²⁺(0.1M) || Cu²⁺(0.01M) | Cu\nAnode (oxidation) | Salt bridge | Cathode (reduction)\n\n🔑 CALCULATE CELL POTENTIAL:\nE°cell = E°cathode - E°anode\nE°cell = +0.34 - (-0.76) = +1.10V (Daniel cell)\n\n📌 FARADAY\'S LAWS:\n1st Law: m ∝ I×t (mass ∝ current × time)\n2nd Law: m ∝ E (equivalent weight)\nm = (M×I×t)/(n×F) where F = 96500 C/mol\n\n📝 CONDUCTANCE:\nκ (conductivity) = 1/ρ\nΛₘ (molar cond.) = κ×1000/M\nΛ°ₘ = λ°c + λ°a (Kohlrausch law)\n\n⚠️ SAY 2019-2024: Nernst equation numerical EVERY year!\n⚠️ This is your 1 mark in Chemistry!' },
+    { id:'c3',subject:'chemistry',name:'Chemical Kinetics',pages:'Pg 90-95',marks:6,status:'pending',notes:'🧪 CHEMICAL KINETICS - 6 marks\n═══════════════════════════════\n\n📌 RATE OF REACTION:\nRate = -d[R]/dt = +d[P]/dt\nRate law: Rate = k[A]ⁿ[B]ᵐ\nOrder n = sum of exponents (can be 0,1,2)\n\n🔑 FIRST ORDER REACTION (CRITICAL!):\nk = 2.303/t × log([A₀]/[A])\nt = 2.303/k × log([A₀]/[A])\n\n📝 HALF-LIFE (FIRST ORDER):\nt½ = 0.693/k\nIndependent of initial concentration!\nFor any reaction: t½ ∝ 1/[A₀]ⁿ⁻¹\n\n📌 ARRHENIUS EQUATION:\nk = Ae^(-Eₐ/RT)\nln(k₂/k₁) = (Eₐ/R)(1/T₁ - 1/T₂)\n\n📝 MOLECULARITY VS ORDER:\n• Molecularity: Number of molecules colliding\n• Order: Experimentally determined\n• Molecularity can\'t be zero | Order can be zero\n\n⚠️ Say 2023: First order k calculation - 3 marks!\n⚠️ Learn: t½ = 0.693/k formula!' },
+    { id:'c4',subject:'chemistry',name:'d & f Block Elements',pages:'Pg 210-215',marks:6,status:'pending',notes:'🧪 d & f BLOCK ELEMENTS - 6 marks\n══════════════════════════════════\n\n📌 ELECTRONIC CONFIGURATION:\nGeneral: (n-1)d¹⁻¹⁰ ns¹⁻²\nTransition metals: Elements with partly filled d-orbitals\n\n📝 PROPERTIES:\n• Variable oxidation states (Fe²⁺, Fe³⁺)\n• Colored compounds (d-d transitions)\n• Paramagnetic (unpaired electrons)\n• Catalytic properties\n• Complex formation\n\n🔑 KMnO₄ (POTASSIUM PERMANGANATE):\n• Purple color (Mn in +7 state, d⁰)\n• Strong oxidizing agent\n• In acidic medium: MnO₄⁻ + 8H⁺ + 5e⁻ → Mn²⁺ + 4H₂O\n• In neutral: MnO₄⁻ + 2H₂O + 3e⁻ → MnO₂ + 4OH⁻\n\n🔑 K₂Cr₂O₇ (POTASSIUM DICHROMATE):\n• Orange color (Cr in +6 state, d⁰)\n• Oxidizing agent\n• Cr₂O₇²⁻ + 14H⁺ + 6e⁻ → 2Cr³⁺ + 7H₂O (green)\n\n📌 LANTHANIDE CONTRACTION:\nAtomic size decreases across lanthanides\nDue to poor shielding of 4f electrons\n\n⚠️ 2021: Why KMnO₄ is colored + K₂Cr₂O₇ orange - 4 marks\n⚠️ Learn: Colors, oxidation states, reactions!' }
   ],
   timetable: [
     { time:'12:30-2:30',subject:'Maths',topic:'As per schedule',done:false },
@@ -764,23 +780,58 @@ function showTopicDetail(id) {
   const t = APP.topics.find(x => x.id === id);
   if (!t) return;
   const modal = document.getElementById('modalContent');
+  const notesHtml = t.notes ? t.notes.split('\n').map(line => {
+    if (line.startsWith('📌')||line.startsWith('📝')||line.startsWith('🔑')||line.startsWith('📐')||line.startsWith('⚡')||line.startsWith('🧪')||line.startsWith('⚠️')||line.startsWith('🎯')||line.startsWith('📐')) {
+      return `<div style="margin:6px 0;font-weight:600;color:var(--accent)">${line}</div>`;
+    } else if (line.startsWith('•')) {
+      return `<div style="margin:2px 0 2px 16px;font-size:13px">${line}</div>`;
+    } else if (line.match(/^\d\./)) {
+      return `<div style="margin:2px 0 2px 16px;font-size:13px">${line}</div>`;
+    } else if (line.trim() === '') {
+      return `<div style="height:4px"></div>`;
+    } else if (line.includes('═══')) {
+      return `<div style="border-bottom:1px solid var(--border);margin:8px 0"></div>`;
+    } else {
+      return `<div style="margin:2px 0;font-size:13px">${line}</div>`;
+    }
+  }).join('') : '<p class="text-muted">No study notes yet. Add your own notes below.</p>';
+  
   modal.innerHTML = `
-    <h2>${t.name}</h2>
-    <p><strong>Subject:</strong> ${t.subject.charAt(0).toUpperCase()+t.subject.slice(1)}</p>
-    <p><strong>Pages:</strong> ${t.pages}</p>
-    <p><strong>Marks:</strong> ${t.marks}</p>
-    <p><strong>Status:</strong> ${t.status === 'done' ? '✅ Revised' : '⏳ Pending'}</p>
-    <div class="form-group mt-8">
-      <label>Your Notes</label>
-      <textarea id="topicNotes" rows="4" placeholder="Write your notes here...">${t.notes || ''}</textarea>
+    <h2 style="border-bottom:2px solid var(--accent);padding-bottom:8px">${t.name}</h2>
+    <div class="flex-between mt-8 mb-8">
+      <span class="badge ${t.subject==='physics'?'badge-physics':t.subject==='chemistry'?'badge-chemistry':'badge-maths'}">${t.subject.toUpperCase()}</span>
+      <span style="font-size:12px;color:var(--text2)">${t.pages} | ${t.marks} marks | ${t.status === 'done' ? '✅ Revised' : '⏳ Pending'}</span>
     </div>
-    <div class="flex mt-16">
-      <button class="btn btn-success btn-sm" onclick="markTopicDone('${id}')">✅ Mark as Revised</button>
-      <button class="btn btn-outline btn-sm" onclick="saveTopicNotes('${id}')">💾 Save Notes</button>
-      <button class="btn btn-sm btn-primary" onclick="startQuizFromTopic('${id}')">🎯 Quiz Me</button>
+    <div style="background:var(--card2);border-radius:8px;padding:14px;margin:8px 0;max-height:300px;overflow-y:auto;font-size:13px;line-height:1.5">
+      ${notesHtml}
+    </div>
+    <div class="form-group mt-8">
+      <label>Your Personal Notes</label>
+      <textarea id="topicNotes" rows="3" placeholder="Add your own notes here...">${t.notes ? t.notes.substring(0,t.notes.lastIndexOf('\n')) : ''}</textarea>
+    </div>
+    <div class="flex mt-8" style="gap:6px;flex-wrap:wrap">
+      <button class="btn btn-success btn-sm" onclick="markTopicDone('${id}')">✅ Mark Revised</button>
+      <button class="btn btn-outline btn-sm" onclick="saveTopicNotes('${id}')">💾 Save</button>
+      <button class="btn btn-sm btn-primary" onclick="startQuizFromTopic('${id}')">🎯 Quiz</button>
+      <button class="btn btn-sm btn-warning" onclick="printNotes('${id}')">🖨️ Print Notes</button>
     </div>
   `;
   document.getElementById('modalOverlay').classList.add('active');
+}
+
+function printNotes(id) {
+  const t = APP.topics.find(x => x.id === id);
+  if (!t) return;
+  const html = `<html><head><style>body{font-family:sans-serif;padding:20px;line-height:1.6;max-width:700px;margin:0 auto}h1{color:#3b82f6;border-bottom:2px solid #3b82f6}h2{color:#eab308}.note{white-space:pre-wrap;font-size:14px}</style></head><body>
+    <h1>${t.name}</h1>
+    <p><strong>${t.pages}</strong> | ${t.marks} marks | Subject: ${t.subject.toUpperCase()}</p>
+    <hr>
+    <div class="note">${t.notes || 'No notes added yet.'}</div>
+  </body></html>`;
+  const w = window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+  w.print();
 }
 
 function markTopicDone(id) {
@@ -1535,7 +1586,44 @@ function updateStreak() {
 }
 
 // CERTIFICATE
+// REVISION
+function filterRevision(sub, btn) {
+  document.querySelectorAll('[data-rev]').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderRevision(sub);
+}
+function renderRevision(filter) {
+  filter = filter || 'all';
+  const el = document.getElementById('revisionContent');
+  if (!el) return;
+  let topics = filter === 'all' ? APP.topics : APP.topics.filter(t => t.subject === filter);
+  let html = '';
+  topics.forEach(t => {
+    const emoji = t.subject==='physics'?'⚡':t.subject==='chemistry'?'🧪':'📐';
+    const notesHtml = (t.notes || 'No notes yet.').split('\n').map(line => {
+      if (line.includes('═══')||line.includes('════')) return '';
+      if (line.startsWith('📌')||line.startsWith('📝')||line.startsWith('🔑')||line.startsWith('📐')||line.startsWith('⚡')||line.startsWith('🧪')||line.startsWith('⚠️')||line.startsWith('🎯')||line.startsWith('📐')) {
+        return `<div style="font-weight:600;color:var(--accent);margin:4px 0">${line}</div>`;
+      } else if (line.trim()) {
+        return `<div style="margin:2px 0 2px 8px;font-size:12px">${line}</div>`;
+      }
+      return '';
+    }).filter(l => l).join('');
+    
+    html += `<div style="background:var(--card2);border-radius:8px;padding:12px;margin-bottom:12px;border-left:3px solid ${t.status==='done'?'var(--green)':'var(--orange)'}">
+      <div class="flex-between mb-8">
+        <strong style="font-size:14px">${emoji} ${t.name}</strong>
+        <span style="font-size:11px;color:var(--text2)">${t.pages} | ${t.marks}m | ${t.status}</span>
+      </div>
+      <div style="max-height:200px;overflow-y:auto;font-size:12px;line-height:1.5">${notesHtml || '<span style="color:var(--text2)">No study notes loaded.</span>'}</div>
+      <button class="btn btn-sm btn-outline mt-8" onclick="showTopicDetail('${t.id}')">📖 Read Full</button>
+    </div>`;
+  });
+  el.innerHTML = html;
+}
+
 function renderCertificate() {
+  renderRevision();
   const el = document.getElementById('certRequirements');
   const doneTopics = APP.topics.filter(t => t.status==='done').length;
   const totalTopics = APP.topics.length;
