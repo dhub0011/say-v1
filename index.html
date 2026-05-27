@@ -1,0 +1,1707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>SAY 2026 - Study Dashboard</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0e17;--card:#111827;--card2:#1a2332;--text:#e2e8f0;--text2:#94a3b8;--accent:#3b82f6;--accent2:#2563eb;--green:#22c55e;--red:#ef4444;--yellow:#eab308;--orange:#f97316;--purple:#a855f7;--pink:#ec4899;--border:#1e293b;--shadow:0 4px 20px rgba(0,0,0,0.3)}
+[data-theme="light"]{--bg:#f1f5f9;--card:#fff;--card2:#e2e8f0;--text:#0f172a;--text2:#475569;--border:#cbd5e1;--shadow:0 4px 20px rgba(0,0,0,0.08)}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+.container{max-width:1200px;margin:0 auto;padding:16px}
+/* Header */
+.header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--card);border-bottom:2px solid var(--accent);position:sticky;top:0;z-index:100;box-shadow:var(--shadow)}
+.header-left{display:flex;align-items:center;gap:12px}
+.header h1{font-size:18px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header-info{font-size:11px;color:var(--text2)}
+.nav{display:flex;gap:4px;flex-wrap:wrap;padding:12px 0}
+.nav-btn{padding:8px 14px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text2);cursor:pointer;font-size:12px;font-weight:600;transition:.2s;white-space:nowrap}
+.nav-btn:hover,.nav-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+/* Panels */
+.panel{display:none}
+.panel.active{display:block;animation:fadeIn .3s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.card{background:var(--card);border-radius:12px;padding:20px;margin-bottom:16px;border:1px solid var(--border);box-shadow:var(--shadow)}
+.card h2{font-size:16px;margin-bottom:12px;font-weight:700}
+.card h3{font-size:14px;margin-bottom:8px;font-weight:600;color:var(--accent)}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+@media(max-width:640px){.grid-2,.grid-3{grid-template-columns:1fr}}
+/* Stats */
+.stat{text-align:center;padding:16px;background:var(--card2);border-radius:10px}
+.stat-num{font-size:28px;font-weight:800;color:var(--accent)}
+.stat-label{font-size:11px;color:var(--text2);margin-top:4px}
+.stat-red .stat-num{color:var(--red)}
+.stat-green .stat-num{color:var(--green)}
+/* Buttons */
+.btn{padding:12px 24px;border:none;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2);transform:translateY(-1px)}
+.btn-danger{background:var(--red);color:#fff}
+.btn-success{background:var(--green);color:#fff}
+.btn-warning{background:var(--orange);color:#fff}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
+.btn-outline:hover{background:var(--card2)}
+.btn-sm{padding:8px 14px;font-size:12px}
+.btn-block{width:100%;justify-content:center}
+/* Progress */
+.progress-bar{height:8px;background:var(--card2);border-radius:4px;overflow:hidden;margin:8px 0}
+.progress-fill{height:100%;border-radius:4px;transition:width .5s;background:linear-gradient(90deg,var(--accent),var(--purple))}
+.progress-fill.green{background:linear-gradient(90deg,var(--green),var(--accent))}
+.progress-fill.red{background:linear-gradient(90deg,var(--red),var(--orange))}
+/* Topic list */
+.topic-item{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--card2);border-radius:8px;margin-bottom:8px;transition:.2s;cursor:pointer}
+.topic-item:hover{transform:translateX(4px)}
+.topic-item.done{border-left:3px solid var(--green)}
+.topic-item.pending{border-left:3px solid var(--orange)}
+.topic-name{font-weight:600;font-size:13px}
+.topic-sub{font-size:11px;color:var(--text2);margin-top:2px}
+.topic-badge{font-size:10px;padding:3px 8px;border-radius:12px;font-weight:600}
+.badge-physics{background:rgba(59,130,246,0.2);color:var(--accent)}
+.badge-chemistry{background:rgba(34,197,94,0.2);color:var(--green)}
+.badge-maths{background:rgba(234,179,8,0.2);color:var(--yellow)}
+/* Modal / Overlay */
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:1000;display:none;justify-content:center;align-items:center;backdrop-filter:blur(4px)}
+.modal-overlay.active{display:flex}
+.modal{background:var(--card);border-radius:16px;padding:24px;max-width:500px;width:90%;max-height:85vh;overflow-y:auto;border:1px solid var(--border)}
+.modal h2{font-size:18px;margin-bottom:12px}
+.modal p{color:var(--text2);font-size:14px;margin-bottom:16px}
+/* Lock overlay */
+.lock-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(10,14,23,0.98);z-index:999;display:none;flex-direction:column;justify-content:center;align-items:center;padding:24px;text-align:center}
+.lock-overlay.active{display:flex}
+.lock-timer{font-size:64px;font-weight:800;color:var(--accent);font-family:monospace}
+.lock-subject{font-size:18px;color:var(--text2);margin:8px 0 16px}
+.lock-message{font-size:14px;color:var(--orange);margin-bottom:20px;max-width:400px}
+.lock-btn{position:absolute;bottom:40px;padding:16px 48px;border-radius:12px;border:2px solid var(--accent);background:transparent;color:#fff;font-size:18px;font-weight:700;cursor:pointer;transition:.2s}
+.lock-btn:hover{background:var(--accent);transform:scale(1.05)}
+/* Inputs */
+input,textarea,select{padding:10px 14px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:14px;width:100%;outline:none;transition:.2s}
+input:focus,textarea:focus,select:focus{border-color:var(--accent)}
+textarea{resize:vertical;min-height:80px}
+.form-group{margin-bottom:12px}
+label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:4px}
+/* Quiz */
+.quiz-question{font-size:16px;font-weight:600;margin-bottom:16px}
+.quiz-level{font-size:11px;padding:3px 10px;border-radius:12px;display:inline-block;margin-bottom:8px;font-weight:600}
+.level-basic{background:rgba(34,197,94,0.2);color:var(--green)}
+.level-medium{background:rgba(234,179,8,0.2);color:var(--yellow)}
+.level-hard{background:rgba(239,68,68,0.2);color:var(--red)}
+.quiz-opts{display:flex;flex-direction:column;gap:8px;margin:12px 0}
+.quiz-opt{padding:12px 16px;border-radius:8px;border:1px solid var(--border);background:var(--card2);cursor:pointer;transition:.2s;text-align:left;font-size:14px}
+.quiz-opt:hover{border-color:var(--accent)}
+.quiz-opt.correct{border-color:var(--green);background:rgba(34,197,94,0.1)}
+.quiz-opt.wrong{border-color:var(--red);background:rgba(239,68,68,0.1)}
+.quiz-result{padding:16px;border-radius:8px;margin-top:12px;font-size:14px}
+.quiz-result.pass{background:rgba(34,197,94,0.1);border:1px solid var(--green)}
+.quiz-result.fail{background:rgba(239,68,68,0.1);border:1px solid var(--red)}
+/* PYQ */
+.pyq-item{padding:14px;background:var(--card2);border-radius:8px;margin-bottom:8px;cursor:pointer;transition:.2s}
+.pyq-item:hover{transform:translateX(4px)}
+.pyq-year{font-size:11px;color:var(--accent);font-weight:600}
+.pyq-q{font-size:13px;margin:4px 0}
+.pyq-mark{font-size:11px;color:var(--text2)}
+.pyq-answer{display:none;margin-top:8px;padding:12px;background:var(--card);border-radius:6px;font-size:13px;color:var(--text2);border-left:3px solid var(--accent)}
+.pyq-answer.show{display:block}
+/* Break timer */
+.break-popup{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:1001;display:none;justify-content:center;align-items:center;backdrop-filter:blur(8px)}
+.break-popup.active{display:flex}
+.break-card{background:var(--card);border-radius:16px;padding:32px;max-width:400px;width:90%;text-align:center;border:2px solid var(--orange)}
+.break-title{font-size:20px;font-weight:700;color:var(--orange);margin-bottom:8px}
+.break-msg{font-size:14px;color:var(--text2);margin-bottom:16px}
+.break-timer{font-size:48px;font-weight:800;color:var(--accent);font-family:monospace;margin:12px 0}
+/* Certificate */
+.certificate{background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);border:3px solid var(--yellow);border-radius:16px;padding:40px;text-align:center;position:relative}
+.certificate h1{font-size:28px;color:var(--yellow);margin-bottom:8px}
+.certificate h2{font-size:22px;color:#fff;margin:8px 0}
+.certificate p{color:var(--text2);font-size:14px;margin:4px 0}
+.certificate .seal{font-size:60px;margin:16px 0}
+.certificate .badge{background:var(--yellow);color:#000;padding:6px 20px;border-radius:20px;font-weight:700;display:inline-block;margin:12px 0}
+/* Heatmap */
+.heatmap{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.heat-day{aspect-ratio:1;border-radius:3px;min-height:14px;font-size:0;position:relative}
+.heat-day:hover{transform:scale(1.3);z-index:10}
+.heat-day::after{content:attr(data-tip);position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);font-size:10px;padding:2px 6px;border-radius:4px;white-space:nowrap;display:none}
+.heat-day:hover::after{display:block}
+.heat-0{background:var(--card2)}
+.heat-1{background:rgba(59,130,246,0.25)}
+.heat-2{background:rgba(59,130,246,0.5)}
+.heat-3{background:rgba(59,130,246,0.75)}
+.heat-4{background:var(--accent)}
+/* Call pause */
+.call-pause-btn{position:fixed;top:20px;right:20px;z-index:998;display:none;background:var(--orange);color:#fff;border:none;border-radius:50%;width:44px;height:44px;font-size:20px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.3)}
+.call-pause-btn.active{display:block}
+/* AI Chat */
+.chat-box{height:300px;overflow-y:auto;padding:12px;background:var(--card2);border-radius:8px;margin:12px 0}
+.chat-msg{margin-bottom:10px;padding:10px 14px;border-radius:12px;max-width:85%;font-size:13px;line-height:1.5}
+.chat-msg.user{background:var(--accent);color:#fff;margin-left:auto;border-bottom-right-radius:4px}
+.chat-msg.ai{background:var(--card);border:1px solid var(--border);margin-right:auto;border-bottom-left-radius:4px}
+.chat-input{display:flex;gap:8px;margin-top:8px}
+.chat-input input{flex:1}
+/* Misc */
+.badge{font-size:11px;padding:4px 10px;border-radius:12px;font-weight:600}
+.text-center{text-align:center}
+.text-muted{color:var(--text2);font-size:13px}
+.mt-8{margin-top:8px}
+.mt-16{margin-top:16px}
+.mb-8{margin-bottom:8px}
+.mb-16{margin-bottom:16px}
+.flex{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.flex-between{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.gap-4{gap:4px}
+.hidden{display:none}
+/* Scrollbar */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+/* Override for light */
+[data-theme="light"] .lock-overlay{background:rgba(241,245,249,0.98)}
+/* Table */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:10px;text-align:left;border-bottom:1px solid var(--border)}
+th{color:var(--text2);font-weight:600;font-size:11px;text-transform:uppercase}
+/* Workout */
+.workout-item{display:flex;align-items:center;gap:12px;padding:12px;background:var(--card2);border-radius:8px;margin-bottom:8px}
+.workout-item input[type="checkbox"]{width:18px;height:18px;accent-color:var(--green)}
+/* Floating particle bg */
+.particles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+.particle{position:absolute;width:4px;height:4px;background:var(--accent);border-radius:50%;opacity:.1;animation:float linear infinite}
+@keyframes float{0%{transform:translateY(100vh) scale(0)}100%{transform:translateY(-100vh) scale(1)}}
+</style>
+</head>
+<body>
+<div class="particles" id="particles"></div>
+<!-- Header -->
+<div class="header">
+  <div class="header-left">
+    <h1>📚 SAY 2026</h1>
+    <span class="header-info">MUHAMMED RIHAN T | 25371123</span>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <span id="liveClock" style="font-size:12px;color:var(--text2);font-family:monospace"></span>
+    <button onclick="toggleTheme()" class="btn btn-sm btn-outline" title="Toggle Theme">🌓</button>
+  </div>
+</div>
+<div class="container">
+  <!-- Navigation -->
+  <div class="nav" id="mainNav">
+    <button class="nav-btn active" data-tab="dashboard">📊 Dashboard</button>
+    <button class="nav-btn" data-tab="studylock">🔒 Study Lock</button>
+    <button class="nav-btn" data-tab="timetable">📅 Timetable</button>
+    <button class="nav-btn" data-tab="materials">📖 Materials</button>
+    <button class="nav-btn" data-tab="quiz">❓ Quiz</button>
+    <button class="nav-btn" data-tab="pyq">📄 PYQ</button>
+    <button class="nav-btn" data-tab="break">🍽️ Break</button>
+    <button class="nav-btn" data-tab="workout">💪 Workout</button>
+    <button class="nav-btn" data-tab="ai">🤖 AI Doubt</button>
+    <button class="nav-btn" data-tab="progress">📈 Progress</button>
+    <button class="nav-btn" data-tab="certificate">🎓 Certificate</button>
+    <button class="nav-btn" data-tab="settings">⚙️ Settings</button>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="panel active" id="panel-dashboard">
+    <div class="card">
+      <div class="flex-between mb-16">
+        <h2>📊 Your Reality Check</h2>
+        <span id="daysLeft" style="font-size:20px;font-weight:800;color:var(--red)"></span>
+      </div>
+      <div class="grid-3">
+        <div class="stat stat-red">
+          <div class="stat-num">16</div>
+          <div class="stat-label">Physics Marks Needed</div>
+        </div>
+        <div class="stat stat-green">
+          <div class="stat-num">1</div>
+          <div class="stat-label">Chemistry Marks Needed</div>
+        </div>
+        <div class="stat stat-red">
+          <div class="stat-num">3</div>
+          <div class="stat-label">Maths Marks Needed</div>
+        </div>
+      </div>
+      <div class="grid-3 mt-8">
+        <div class="stat"><div class="stat-num">20</div><div class="stat-label">Total Marks Needed</div></div>
+        <div class="stat"><div class="stat-num" id="topicCount">0/13</div><div class="stat-label">Topics Revised</div></div>
+        <div class="stat"><div class="stat-num" id="streakCount">0</div><div class="stat-label">Day Streak</div></div>
+      </div>
+      <button class="btn btn-primary btn-block mt-16" onclick="switchTab('studylock')">🔒 START STUDY LOCK NOW</button>
+    </div>
+    <div class="card">
+      <h2>📋 Today's Schedule</h2>
+      <div id="todaySchedule"></div>
+    </div>
+    <div class="card">
+      <h2>⚠️ Weak Areas</h2>
+      <div id="weakAreas"></div>
+    </div>
+  </div>
+
+  <!-- STUDY LOCK -->
+  <div class="panel" id="panel-studylock">
+    <div class="card">
+      <h2>🔒 Study Lock Mode</h2>
+      <p class="text-muted mb-16">Start a study session. Phone locks until you complete the session and pass the quiz.</p>
+      <div class="grid-2">
+        <div>
+          <div class="form-group">
+            <label>Select Subject</label>
+            <select id="lockSubject" onchange="updateLockTopics()">
+              <option value="physics">Physics</option>
+              <option value="chemistry">Chemistry</option>
+              <option value="maths">Mathematics</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Topic</label>
+            <select id="lockTopic"></select>
+          </div>
+          <div class="form-group">
+            <label>Duration (minutes)</label>
+            <input type="number" id="lockDuration" value="120" min="15" max="240">
+          </div>
+          <button class="btn btn-danger btn-block" onclick="startLock()">🔒 START STUDY LOCK</button>
+        </div>
+        <div style="text-align:center;padding:20px">
+          <div style="font-size:14px;color:var(--text2)">Current Session</div>
+          <div id="lockStatus" style="color:var(--text2);margin:12px 0">Not started</div>
+          <div id="sessionTimer" style="font-size:48px;font-weight:800;color:var(--accent);font-family:monospace">--:--</div>
+          <button class="btn btn-success btn-sm mt-8" onclick="pauseForCall()" id="callPauseBtn" style="display:none">📞 I Got a Call</button>
+          <button class="btn btn-primary btn-sm mt-8" onclick="endStudySession()" id="endStudyBtn" style="display:none">✅ I Studied</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIMETABLE -->
+  <div class="panel" id="panel-timetable">
+    <div class="card">
+      <div class="flex-between mb-16">
+        <h2>📅 Your Timetable</h2>
+        <button class="btn btn-sm btn-primary" onclick="resetTimetable()">Reset</button>
+      </div>
+      <div id="timetableView"></div>
+    </div>
+  </div>
+
+  <!-- MATERIALS -->
+  <div class="panel" id="panel-materials">
+    <div class="card">
+      <div class="flex-between mb-16">
+        <h2>📖 Study Materials - All 13 Topics</h2>
+        <button class="btn btn-sm btn-outline" onclick="showAddTopicModal()">+ Add Topic</button>
+      </div>
+      <div id="subjectFilter" class="flex mb-16" style="gap:6px">
+        <button class="btn btn-sm btn-outline active" data-filter="all" onclick="filterMaterials('all',this)">All</button>
+        <button class="btn btn-sm btn-outline" data-filter="physics" onclick="filterMaterials('physics',this)">Physics</button>
+        <button class="btn btn-sm btn-outline" data-filter="chemistry" onclick="filterMaterials('chemistry',this)">Chemistry</button>
+        <button class="btn btn-sm btn-outline" data-filter="maths" onclick="filterMaterials('maths',this)">Maths</button>
+      </div>
+      <div id="materialsList"></div>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="panel" id="panel-quiz">
+    <div class="card">
+      <h2>❓ Adaptive Quiz Engine</h2>
+      <p class="text-muted mb-16">Basic → Medium → Hard. Answer right to advance. Wrong = revision + 10min lock.</p>
+      <div class="form-group">
+        <label>Select Subject</label>
+        <select id="quizSubject" onchange="loadQuizTopics()">
+          <option value="physics">Physics</option>
+          <option value="chemistry">Chemistry</option>
+          <option value="maths">Mathematics</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Topic</label>
+        <select id="quizTopic"></select>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="startQuiz()">🎯 Start Quiz</button>
+      <div id="quizArea" class="mt-16"></div>
+    </div>
+  </div>
+
+  <!-- PYQ -->
+  <div class="panel" id="panel-pyq">
+    <div class="card">
+      <h2>📄 PYQ Vault - 2019 to 2024 Analysis</h2>
+      <p class="text-muted mb-16">Previous 5 year high-weightage questions for your 20-mark strategy.</p>
+      <div id="subjectPyqFilter" class="flex mb-16" style="gap:6px">
+        <button class="btn btn-sm btn-outline active" data-pyq="all" onclick="filterPYQ('all',this)">All</button>
+        <button class="btn btn-sm btn-outline" data-pyq="physics" onclick="filterPYQ('physics',this)">Physics</button>
+        <button class="btn btn-sm btn-outline" data-pyq="chemistry" onclick="filterPYQ('chemistry',this)">Chemistry</button>
+        <button class="btn btn-sm btn-outline" data-pyq="maths" onclick="filterPYQ('maths',this)">Maths</button>
+      </div>
+      <div id="pyqList"></div>
+    </div>
+  </div>
+
+  <!-- BREAK -->
+  <div class="panel" id="panel-break">
+    <div class="card">
+      <h2>🍽️ Meal & Fresh-up Breaks</h2>
+      <p class="text-muted mb-16">"Grandpa says: You can't say no. Eat now."</p>
+      <div class="grid-3">
+        <div class="stat">
+          <div class="stat-num">🍚</div>
+          <div class="stat-label">Lunch: 2:30-3:30 PM</div>
+          <button class="btn btn-sm btn-primary mt-8 btn-block" onclick="startBreak('lunch')">Start Lunch</button>
+        </div>
+        <div class="stat">
+          <div class="stat-num">🚿</div>
+          <div class="stat-label">Fresh-up: 5:30-6:30 PM</div>
+          <button class="btn btn-sm btn-primary mt-8 btn-block" onclick="startBreak('freshup')">Start Fresh-up</button>
+        </div>
+        <div class="stat">
+          <div class="stat-num">🌙</div>
+          <div class="stat-label">Dinner: 8:30-9:30 PM</div>
+          <button class="btn btn-sm btn-primary mt-8 btn-block" onclick="startBreak('dinner')">Start Dinner</button>
+        </div>
+      </div>
+      <button class="btn btn-warning btn-block mt-16" onclick="skipBreak()">⏭️ Skip Break, I'll Study Instead</button>
+    </div>
+  </div>
+
+  <!-- WORKOUT -->
+  <div class="panel" id="panel-workout">
+    <div class="card">
+      <h2>💪 Strict Workout - 30 Min Daily</h2>
+      <p class="text-muted mb-16">"Healthy body = sharp mind. No skipping."</p>
+      <div id="workoutList"></div>
+      <div class="flex-between mt-16">
+        <span id="workoutProgress" style="font-size:13px;color:var(--text2)">0/8 done</span>
+        <button class="btn btn-sm btn-primary" onclick="resetWorkout()">Reset Daily</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI -->
+  <div class="panel" id="panel-ai">
+    <div class="card">
+      <h2>🤖 AI Doubt Solver</h2>
+      <p class="text-muted mb-16">Ask doubts. Answers use your study material as context.</p>
+      <div class="chat-box" id="chatBox">
+        <div class="chat-msg ai">👋 Hey Rihan! Ask me any doubt from Physics, Chemistry, or Maths. I'll explain using your SCERT +2 material.</div>
+      </div>
+      <div class="chat-input">
+        <input type="text" id="chatInput" placeholder="Type your doubt..." onkeydown="if(event.key==='Enter')sendChat()">
+        <button class="btn btn-primary" onclick="sendChat()">Send</button>
+      </div>
+      <div class="flex-between mt-8">
+        <span class="text-muted" style="font-size:11px">API: <span id="aiStatus">Not configured</span></span>
+        <button class="btn btn-sm btn-outline" onclick="document.getElementById('panel-settings').scrollIntoView({behavior:'smooth'});switchTab('settings')">Configure API</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="panel" id="panel-progress">
+    <div class="card">
+      <h2>📈 Progress Tracker</h2>
+      <div class="grid-2">
+        <div>
+          <h3>Subject Mastery</h3>
+          <div id="subjectMastery"></div>
+        </div>
+        <div>
+          <h3>Study Streak</h3>
+          <div class="stat">
+            <div class="stat-num" id="progressStreak">0</div>
+            <div class="stat-label">Days in a row</div>
+          </div>
+          <div style="font-size:12px;color:var(--text2);margin-top:4px">Break streak = fail SAY</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>📅 Study Calendar</h2>
+      <div class="flex-between mb-8">
+        <span class="text-muted" id="heatMonth">May 2026</span>
+        <div class="flex gap-4">
+          <button class="btn btn-sm btn-outline" onclick="changeHeatMonth(-1)">←</button>
+          <button class="btn btn-sm btn-outline" onclick="changeHeatMonth(1)">→</button>
+        </div>
+      </div>
+      <div class="flex gap-4 mb-8" style="font-size:10px;color:var(--text2)">
+        <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+      </div>
+      <div class="heatmap" id="heatmap"></div>
+    </div>
+    <div class="card">
+      <h2>📊 Study Stats</h2>
+      <div id="studyStats"></div>
+    </div>
+  </div>
+
+  <!-- CERTIFICATE -->
+  <div class="panel" id="panel-certificate">
+    <div class="card">
+      <h2>🎓 Certificate of Achievement</h2>
+      <p class="text-muted mb-16">Unlock when ALL conditions are met.</p>
+      <div id="certRequirements"></div>
+      <div id="certDisplay" class="mt-16"></div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="panel" id="panel-settings">
+    <div class="card">
+      <h2>⚙️ Settings</h2>
+      <div class="form-group">
+        <label>Your Name</label>
+        <input type="text" id="userName" value="MUHAMMED RIHAN T" onchange="saveSettings()">
+      </div>
+      <div class="form-group">
+        <label>Registration No</label>
+        <input type="text" id="userReg" value="25371123" onchange="saveSettings()">
+      </div>
+      <div class="form-group">
+        <label>Theme</label>
+        <select id="themeSelect" onchange="setTheme(this.value)">
+          <option value="dark">Dark Mode</option>
+          <option value="light">Light Mode</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Strictness Level</label>
+        <select id="strictness" onchange="saveSettings()">
+          <option value="normal">Normal</option>
+          <option value="strict">Strict</option>
+          <option value="grandparent">Grandparent Mode 🔥</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Gemini API Key</label>
+        <input type="password" id="geminiKey" placeholder="Paste your API key" onchange="saveSettings()">
+        <span style="font-size:10px;color:var(--text2)">Key stays in your browser only</span>
+      </div>
+      <div class="form-group">
+        <label>Groq API Key</label>
+        <input type="password" id="groqKey" placeholder="Paste your API key" onchange="saveSettings()">
+      </div>
+      <div class="flex mt-16" style="gap:8px">
+        <button class="btn btn-primary" onclick="exportData()">📦 Export Data</button>
+        <button class="btn btn-warning" onclick="document.getElementById('importFile').click()">📥 Import Data</button>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+        <button class="btn btn-danger" onclick="if(confirm('Reset ALL data?'))resetAll()">🗑️ Reset All</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<!-- LOCK OVERLAY -->
+<div class="lock-overlay" id="lockOverlay">
+  <div style="font-size:14px;color:var(--text2);margin-bottom:8px">🔒 STUDY LOCK ACTIVE</div>
+  <div class="lock-timer" id="lockTimer">02:00:00</div>
+  <div class="lock-subject" id="lockSubjectDisplay">Physics - Ray Optics</div>
+  <div class="lock-message" id="lockMessage">Grandpa is watching. No escape.</div>
+  <button class="lock-btn" id="lockMainBtn" onclick="lockMainAction()">I'M STUDYING 💪</button>
+</div>
+
+<!-- BREAK POPUP -->
+<div class="break-popup" id="breakPopup">
+  <div class="break-card">
+    <div class="break-title" id="breakTitle">🍽️ Lunch Break</div>
+    <div class="break-msg" id="breakMsg">Grandpa says: You can't say no. Eat now.</div>
+    <div class="break-timer" id="breakTimer">60:00</div>
+    <div class="flex" style="justify-content:center;gap:8px;margin-top:16px">
+      <button class="btn btn-success btn-sm" onclick="endBreak()">✅ Done Eating</button>
+      <button class="btn btn-warning btn-sm" onclick="skipBreak()">⏭️ Skip</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ========== APP DATA ==========
+const DEFAULT_DATA = {
+  user: { name: 'MUHAMMED RIHAN T', regNo: '25371123' },
+  settings: { theme: 'dark', strictness: 'grandparent', geminiKey: '', groqKey: '' },
+  topics: [
+    { id:'m1',subject:'maths',name:'Linear Programming',pages:'SCERT +2 Pg 509-518',marks:6,status:'pending',notes:'' },
+    { id:'m2',subject:'maths',name:'Matrices',pages:'Pg 60-68',marks:8,status:'pending',notes:'' },
+    { id:'m3',subject:'maths',name:'Determinants',pages:'Pg 90-95',marks:8,status:'pending',notes:'' },
+    { id:'m4',subject:'maths',name:'Vectors',pages:'Pg 404-410',marks:4,status:'pending',notes:'' },
+    { id:'p1',subject:'physics',name:'Ray Optics',pages:'SCERT +2 Pg 309-320',marks:8,status:'pending',notes:'' },
+    { id:'p2',subject:'physics',name:'Wave Optics',pages:'Pg 340-345',marks:6,status:'pending',notes:'' },
+    { id:'p3',subject:'physics',name:'Atoms + Nuclei',pages:'Pg 390-395',marks:6,status:'pending',notes:'' },
+    { id:'p4',subject:'physics',name:'Semiconductors',pages:'Pg 460-465',marks:6,status:'pending',notes:'' },
+    { id:'p5',subject:'physics',name:'Units & Dimensions',pages:'Pg 2-5',marks:4,status:'pending',notes:'' },
+    { id:'c1',subject:'chemistry',name:'Solutions',pages:'SCERT +2 Pg 33-38',marks:6,status:'pending',notes:'' },
+    { id:'c2',subject:'chemistry',name:'Electrochemistry',pages:'Pg 65-70',marks:6,status:'pending',notes:'' },
+    { id:'c3',subject:'chemistry',name:'Chemical Kinetics',pages:'Pg 90-95',marks:6,status:'pending',notes:'' },
+    { id:'c4',subject:'chemistry',name:'d & f Block Elements',pages:'Pg 210-215',marks:6,status:'pending',notes:'' }
+  ],
+  timetable: [
+    { time:'12:30-2:30',subject:'Maths',topic:'As per schedule',done:false },
+    { time:'3:30-5:30',subject:'Chemistry',topic:'As per schedule',done:false },
+    { time:'6:30-8:30',subject:'Physics',topic:'As per schedule',done:false },
+    { time:'9:30-11:30',subject:'PYQs',topic:'Previous Year Qs',done:false }
+  ],
+  pyqs: [
+    { subject:'physics',year:'2024',q:'State and derive mirror formula. A concave mirror of focal length 15 cm produces an image 3 times the size of object. Find object distance.',marks:4,answer:'1/f = 1/u + 1/v. For concave f=-15cm, m=-v/u=3 or -3. Use sign convention. u = -20cm or -10cm.' },
+    { subject:'physics',year:'2023',q:'Define half-life. The half-life of a radioactive substance is 5 years. How much of 100g sample will remain after 20 years?',marks:3,answer:'T1/2 = 0.693/λ. After 4 half-lives (20yr), remaining = 100×(1/2)^4 = 6.25g.' },
+    { subject:'physics',year:'2022',q:'Explain transistor as an amplifier with circuit diagram. Derive voltage gain.',marks:6,answer:'Common emitter amplifier: Vcc, Rb, Rc. Input at base, output at collector. Gain Av = -βRc/Rb. Phase reversal of 180°.' },
+    { subject:'physics',year:'2024',q:'State laws of refraction. A ray enters from air to glass (n=1.5). If angle of incidence is 60°, find angle of refraction.',marks:3,answer:'n1 sin i = n2 sin r. 1×sin60 = 1.5×sin r. r = sin^-1(0.577) ≈ 35.3°' },
+    { subject:'physics',year:'2021',q:'Write Einstein\'s photoelectric equation. What is stopping potential?',marks:4,answer:'hν = φ + ½mv² = hν₀ + eV₀. Stopping potential V₀ = (h/e)(ν-ν₀)' },
+    { subject:'chemistry',year:'2024',q:'Write Nernst equation. Calculate emf of cell: Zn|Zn²+(0.1M)||Cu²+(0.01M)|Cu. E°Zn = -0.76V, E°Cu = +0.34V',marks:3,answer:'E = E° - 0.0591/n log Q. E°cell = 1.10V. E = 1.10 - 0.0591/2 log(0.1/0.01) = 1.10 - 0.0295 = 1.0705V' },
+    { subject:'chemistry',year:'2023',q:'Derive integrated rate equation for first order reaction. Half-life of a first order reaction is 10 min. Calculate rate constant.',marks:3,answer:'k = 2.303/t log([A₀]/[A]). t½ = 0.693/k. k = 0.693/10 = 0.0693 min⁻¹' },
+    { subject:'chemistry',year:'2022',q:'Explain mole fraction. What is mole fraction of solute in 1 molal aqueous solution?',marks:3,answer:'xₐ = nₐ/(nₐ+nᵦ). For 1m: 1 mol solute in 1000g water (55.55 mol). x_solute = 1/(1+55.55) = 0.0177' },
+    { subject:'chemistry',year:'2021',q:'What are d-block elements? Explain why KMnO₄ is colored and K₂Cr₂O₇ is orange.',marks:4,answer:'d-d transitions. KMnO₄ has Mn in +7 (d⁰, charge transfer gives purple). K₂Cr₂O₇ has Cr in +6 (d⁰, LMCT gives orange).' },
+    { subject:'chemistry',year:'2020',q:'State Faraday\'s laws of electrolysis. Calculate mass of Cu deposited by 0.5A current for 30 min. (At wt Cu = 63.5)',marks:3,answer:'m = Zit = (M/nF)it = (63.5/2×96500)×0.5×1800 = 0.296g' },
+    { subject:'maths',year:'2024',q:'Find the inverse of matrix A = [[2,3],[1,4]] using adjoint method.',marks:4,answer:'|A| = 8-3=5. adj = [[4,-3],[-1,2]]. A⁻¹ = adj/|A| = [[4/5,-3/5],[-1/5,2/5]]' },
+    { subject:'maths',year:'2023',q:'Using determinants, find area of triangle with vertices (1,2), (3,4), (5,6).',marks:4,answer:'Area = ½|det| = ½|1(4-6)-2(3-5)+1(3×6-4×5)| = ½|-2+4-2| = 0. Points are collinear.' },
+    { subject:'maths',year:'2022',q:'Solve LPP graphically: Maximize Z = 3x+4y subject to x+y≤4, x≥0, y≥0.',marks:6,answer:'Corner pts: (0,0):0, (4,0):12, (0,4):16, (2,2):14. Max at (0,4) Z=16.' },
+    { subject:'maths',year:'2021',q:'Find projection of vector a=î+2ĵ+3k̂ on vector b=2î+ĵ+2k̂.',marks:4,answer:'proj = (a·b)/|b| = (2+2+6)/√(4+1+4) = 10/3' },
+    { subject:'maths',year:'2019',q:'For matrix A = [[1,2,3],[0,1,4],[5,6,0]], find adjoint and verify A(adjA)=|A|I.',marks:6,answer:'Compute cofactors, adj = transpose. |A| = 1(0-24)-2(0-20)+3(0-5) = -24+40-15 = 1. A(adjA) = I.' }
+  ],
+  quizQuestions: [
+    { subject:'physics',level:'basic',q:'What are the 7 SI base units?',a:'meter, kg, second, ampere, kelvin, candela, mole' },
+    { subject:'physics',level:'basic',q:'Write mirror formula.',a:'1/f = 1/v + 1/u (with sign convention)' },
+    { subject:'physics',level:'basic',q:'What is half-life?',a:'Time for half the radioactive nuclei to decay. T½ = 0.693/λ' },
+    { subject:'physics',level:'medium',q:'An object is placed 20cm from concave mirror of f=15cm. Find image position.',a:'1/v = 1/f - 1/u = -1/15 + 1/20 = -4/60+3/60 = -1/60. v = -60cm (real)' },
+    { subject:'physics',level:'medium',q:'What is the energy of a photon of blue light (λ=480nm)? h=6.63×10⁻³⁴',a:'E = hc/λ = 6.63×10⁻³⁴×3×10⁸/480×10⁻⁹ = 4.14×10⁻¹⁹ J' },
+    { subject:'physics',level:'hard',q:'Derive lens maker formula for thin lens.',a:'1/f = (n₂/n₁-1)(1/R₁-1/R₂). Using refraction at two spherical surfaces.' },
+    { subject:'chemistry',level:'basic',q:'Write Nernst equation for 25°C.',a:'E = E° - 0.0591/n log Q, where Q = [Product]/[Reactant]' },
+    { subject:'chemistry',level:'basic',q:'What is mole fraction?',a:'Ratio of moles of component to total moles in mixture.' },
+    { subject:'chemistry',level:'basic',q:'Write first order rate equation.',a:'k = 2.303/t log([A₀]/[A])' },
+    { subject:'chemistry',level:'medium',q:'Rate constant for first order reaction is 0.0693 min⁻¹. Find half-life.',a:'t½ = 0.693/k = 0.693/0.0693 = 10 min' },
+    { subject:'chemistry',level:'medium',q:'Calculate emf of cell: E°=1.10V, [Zn²+]=0.1M, [Cu²+]=0.01M at 25°C.',a:'E = 1.10 - 0.0591/2 log(0.1/0.01) = 1.10 - 0.0295 = 1.0705V' },
+    { subject:'chemistry',level:'hard',q:'Explain why transition metal compounds are colored with examples.',a:'d-d transitions. Ti³⁺(d¹): purple. Cu²⁺(d⁹): blue. Zn²⁺(d¹⁰): colorless (no d-d).' },
+    { subject:'maths',level:'basic',q:'What are the 3 steps of LPP?',a:'1. Identify feasible region 2. Find corner points 3. Evaluate Z at corners' },
+    { subject:'maths',level:'basic',q:'Formula for area of triangle using determinants.',a:'Area = ½|x₁(y₂-y₃)+x₂(y₃-y₁)+x₃(y₁-y₂)|' },
+    { subject:'maths',level:'basic',q:'What is adjoint of a matrix?',a:'Transpose of cofactor matrix. A⁻¹ = adj(A)/|A|' },
+    { subject:'maths',level:'medium',q:'Find inverse of [[2,3],[1,4]].',a:'|A|=5. adj=[[4,-3],[-1,2]]. A⁻¹=[[4/5,-3/5],[-1/5,2/5]]' },
+    { subject:'maths',level:'medium',q:'Maximize Z=3x+4y subject to x+y≤4, x,y≥0',a:'Corner: (0,0)=0, (4,0)=12, (0,4)=16. Max at (0,4): Z=16' },
+    { subject:'maths',level:'hard',q:'Prove that for any square matrix A, A(adjA) = (adjA)A = |A|I',a:'Using expansion of determinant. (adjA)ᵢⱼ = Cⱼᵢ. Sum over k: aᵢₖCⱼₖ = δᵢⱼ|A|' }
+  ],
+  workout: [
+    { name:'Push-ups',reps:'20 x 3',done:false },
+    { name:'Squats',reps:'20 x 3',done:false },
+    { name:'Plank',reps:'30 sec x 3',done:false },
+    { name:'Jumping Jacks',reps:'30 x 3',done:false },
+    { name:'Lunges',reps:'15 x 2 each',done:false },
+    { name:'Bicycle Crunches',reps:'20 x 3',done:false },
+    { name:'Stretching',reps:'5 min full body',done:false },
+    { name:'Deep Breathing',reps:'2 min',done:false }
+  ],
+  streaks: 0,
+  lastStudyDate: '',
+  studyLog: {},
+  heatmapData: {},
+  mockScores: [],
+  breakSkipped: false,
+  certificateUnlocked: false,
+  studyHoursToday: 0
+};
+
+let APP = JSON.parse(JSON.stringify(DEFAULT_DATA));
+
+// ========== PERSISTENCE ==========
+function saveData() {
+  try { localStorage.setItem('say2026_data', JSON.stringify(APP)); } catch(e) {}
+}
+function loadData() {
+  try {
+    const d = localStorage.getItem('say2026_data');
+    if (d) { APP = JSON.parse(d); return true; }
+  } catch(e) {}
+  return false;
+}
+if (!loadData()) { saveData(); }
+
+// ========== THEME ==========
+function setTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  APP.settings.theme = t;
+  saveData();
+}
+function toggleTheme() {
+  const t = APP.settings.theme === 'dark' ? 'light' : 'dark';
+  setTheme(t);
+  document.getElementById('themeSelect').value = t;
+}
+// init theme
+document.documentElement.setAttribute('data-theme', APP.settings.theme || 'dark');
+document.getElementById('themeSelect').value = APP.settings.theme || 'dark';
+
+// ========== NAVIGATION ==========
+function switchTab(tab) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + tab).classList.add('active');
+  const btn = document.querySelector(`[data-tab="${tab}"]`);
+  if (btn) btn.classList.add('active');
+  renderAll();
+}
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+});
+
+// ========== CLOCK ==========
+function updateClock() {
+  const now = new Date();
+  const ist = new Date(now.toLocaleString('en-US', {timeZone:'Asia/Kolkata'}));
+  document.getElementById('liveClock').textContent = ist.toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true});
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ========== PARTICLES ==========
+(function initParticles(){
+  const c = document.getElementById('particles');
+  for(let i=0;i<30;i++){
+    const p = document.createElement('div');
+    p.className='particle';
+    p.style.left=Math.random()*100+'%';
+    p.style.animationDuration=(10+Math.random()*20)+'s';
+    p.style.animationDelay=Math.random()*20+'s';
+    p.style.width=p.style.height=(2+Math.random()*4)+'px';
+    c.appendChild(p);
+  }
+})();
+
+// ========== RENDER FUNCTIONS ==========
+function renderAll() {
+  renderDashboard();
+  renderMaterials();
+  renderTimetable();
+  renderPYQ();
+  renderWorkout();
+  renderProgress();
+  renderCertificate();
+  updateLockTopics();
+  loadQuizTopics();
+  updateAIStatus();
+  updateWeakAreas();
+}
+
+// DASHBOARD
+function renderDashboard() {
+  const examDate = new Date('2026-06-29T00:00:00+05:30');
+  const now = new Date(new Date().toLocaleString('en-US', {timeZone:'Asia/Kolkata'}));
+  const diff = Math.ceil((examDate - now) / (1000*60*60*24));
+  document.getElementById('daysLeft').textContent = diff > 0 ? `${diff} days left` : 'EXAM DAY! 🔥';
+  
+  const done = APP.topics.filter(t => t.status === 'done').length;
+  document.getElementById('topicCount').textContent = `${done}/${APP.topics.length}`;
+  document.getElementById('streakCount').textContent = APP.streaks;
+
+  // Today schedule
+  const today = now.toLocaleDateString('en-IN', {weekday:'long'});
+  const scheduleEl = document.getElementById('todaySchedule');
+  let html = '';
+  APP.timetable.forEach(s => {
+    const isPast = s.time.split('-')[1] && now.getHours() > parseInt(s.time.split('-')[1].split(':')[0]);
+    html += `<div class="flex-between" style="padding:8px 0;border-bottom:1px solid var(--border);opacity:${isPast?0.5:1}">
+      <div><strong>${s.time}</strong> <span style="color:var(--text2)">${s.subject}</span></div>
+      <div class="badge ${s.done?'badge-physics':'badge-maths'}">${s.done?'✅ Done':'⏳ Pending'}</div>
+    </div>`;
+  });
+  scheduleEl.innerHTML = html;
+}
+
+// WEAK AREAS
+function updateWeakAreas() {
+  const el = document.getElementById('weakAreas');
+  const pending = APP.topics.filter(t => t.status === 'pending');
+  if (pending.length === 0) {
+    el.innerHTML = '<p class="text-muted" style="color:var(--green)">✅ All topics revised! Ready for exam!</p>';
+    return;
+  }
+  let html = '<p class="text-muted mb-8">Topics you haven\'t revised yet:</p>';
+  pending.slice(0,6).forEach(t => {
+    html += `<div class="topic-item pending" onclick="switchTab('materials')">
+      <div><div class="topic-name">${t.name}</div><div class="topic-sub">${t.pages}</div></div>
+      <span class="topic-badge ${t.subject==='physics'?'badge-physics':t.subject==='chemistry'?'badge-chemistry':'badge-maths'}">${t.subject}</span>
+    </div>`;
+  });
+  el.innerHTML = html;
+}
+
+// MATERIALS
+function filterMaterials(f, btn) {
+  document.querySelectorAll('#subjectFilter .btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderMaterials(f);
+}
+function renderMaterials(filter) {
+  filter = filter || 'all';
+  const el = document.getElementById('materialsList');
+  let subjects = { physics: [], chemistry: [], maths: [] };
+  APP.topics.forEach(t => { if (subjects[t.subject]) subjects[t.subject].push(t); });
+  let html = '';
+  for (let [sub, topics] of Object.entries(subjects)) {
+    if (filter !== 'all' && filter !== sub) continue;
+    const emoji = sub === 'physics' ? '⚡' : sub === 'chemistry' ? '🧪' : '📐';
+    const cap = sub.charAt(0).toUpperCase() + sub.slice(1);
+    const done = topics.filter(t => t.status === 'done').length;
+    html += `<h3 class="mb-8">${emoji} ${cap} (${done}/${topics.length})</h3>`;
+    topics.forEach(t => {
+      const statusIcon = t.status === 'done' ? '✅' : '📖';
+      html += `<div class="topic-item ${t.status}" onclick="showTopicDetail('${t.id}')">
+        <div>
+          <div class="topic-name">${statusIcon} ${t.name}</div>
+          <div class="topic-sub">${t.pages} | ${t.marks} marks</div>
+          ${t.notes ? `<div class="topic-sub" style="font-style:italic">📝 ${t.notes.substring(0,60)}...</div>` : ''}
+        </div>
+        <div style="text-align:right">
+          <span class="topic-badge ${sub==='physics'?'badge-physics':sub==='chemistry'?'badge-chemistry':'badge-maths'}">${t.status.toUpperCase()}</span>
+        </div>
+      </div>`;
+    });
+  }
+  el.innerHTML = html;
+}
+
+function showTopicDetail(id) {
+  const t = APP.topics.find(x => x.id === id);
+  if (!t) return;
+  const modal = document.getElementById('modalContent');
+  modal.innerHTML = `
+    <h2>${t.name}</h2>
+    <p><strong>Subject:</strong> ${t.subject.charAt(0).toUpperCase()+t.subject.slice(1)}</p>
+    <p><strong>Pages:</strong> ${t.pages}</p>
+    <p><strong>Marks:</strong> ${t.marks}</p>
+    <p><strong>Status:</strong> ${t.status === 'done' ? '✅ Revised' : '⏳ Pending'}</p>
+    <div class="form-group mt-8">
+      <label>Your Notes</label>
+      <textarea id="topicNotes" rows="4" placeholder="Write your notes here...">${t.notes || ''}</textarea>
+    </div>
+    <div class="flex mt-16">
+      <button class="btn btn-success btn-sm" onclick="markTopicDone('${id}')">✅ Mark as Revised</button>
+      <button class="btn btn-outline btn-sm" onclick="saveTopicNotes('${id}')">💾 Save Notes</button>
+      <button class="btn btn-sm btn-primary" onclick="startQuizFromTopic('${id}')">🎯 Quiz Me</button>
+    </div>
+  `;
+  document.getElementById('modalOverlay').classList.add('active');
+}
+
+function markTopicDone(id) {
+  const t = APP.topics.find(x => x.id === id);
+  if (t) { t.status = 'done'; saveData(); renderAll(); }
+  closeModal();
+}
+
+function saveTopicNotes(id) {
+  const t = APP.topics.find(x => x.id === id);
+  const notes = document.getElementById('topicNotes').value;
+  if (t) { t.notes = notes; saveData(); renderAll(); }
+}
+
+function startQuizFromTopic(id) {
+  const t = APP.topics.find(x => x.id === id);
+  closeModal();
+  if (t) {
+    document.getElementById('quizSubject').value = t.subject;
+    renderAll();
+    switchTab('quiz');
+    loadQuizTopics();
+    document.getElementById('quizTopic').value = t.id;
+    startQuiz();
+  }
+}
+
+function showAddTopicModal() {
+  const modal = document.getElementById('modalContent');
+  modal.innerHTML = `
+    <h2>➕ Add Custom Topic</h2>
+    <div class="form-group">
+      <label>Subject</label>
+      <select id="addTopicSubject"><option value="physics">Physics</option><option value="chemistry">Chemistry</option><option value="maths">Mathematics</option></select>
+    </div>
+    <div class="form-group">
+      <label>Topic Name</label>
+      <input id="addTopicName" placeholder="e.g. Thermodynamics">
+    </div>
+    <div class="form-group">
+      <label>Pages / Reference</label>
+      <input id="addTopicPages" placeholder="Pg X-Y">
+    </div>
+    <div class="form-group">
+      <label>Marks</label>
+      <input type="number" id="addTopicMarks" value="4">
+    </div>
+    <button class="btn btn-primary btn-block" onclick="addTopic()">Add Topic</button>
+  `;
+  document.getElementById('modalOverlay').classList.add('active');
+}
+
+function addTopic() {
+  const name = document.getElementById('addTopicName').value.trim();
+  if (!name) return;
+  const id = 'cst_' + Date.now();
+  APP.topics.push({
+    id, subject: document.getElementById('addTopicSubject').value,
+    name, pages: document.getElementById('addTopicPages').value || 'N/A',
+    marks: parseInt(document.getElementById('addTopicMarks').value) || 4,
+    status: 'pending', notes: ''
+  });
+  saveData(); renderAll(); closeModal();
+}
+
+// TIMETABLE
+function renderTimetable() {
+  const el = document.getElementById('timetableView');
+  let html = '<table><thead><tr><th>Time</th><th>Subject</th><th>Topic</th><th>Status</th><th></th></tr></thead><tbody>';
+  APP.timetable.forEach((s, i) => {
+    html += `<tr>
+      <td><strong>${s.time}</strong></td>
+      <td>${s.subject}</td>
+      <td style="color:var(--text2)">${s.topic}</td>
+      <td>${s.done ? '✅' : '⏳'}</td>
+      <td><button class="btn btn-sm ${s.done?'btn-outline':'btn-success'}" onclick="toggleTimetable(${i})">${s.done?'Undo':'Done'}</button></td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  html += `<div class="flex mt-16">
+    <button class="btn btn-sm btn-primary" onclick="showEditTimetable()">✏️ Edit</button>
+    <button class="btn btn-sm btn-warning" onclick="if(confirm('Reschedule all for today?'))rescheduleDay()">🔄 Reschedule Day</button>
+  </div>`;
+  el.innerHTML = html;
+}
+
+function toggleTimetable(i) {
+  APP.timetable[i].done = !APP.timetable[i].done;
+  if (APP.timetable[i].done) updateStreak();
+  saveData(); renderAll();
+}
+
+function showEditTimetable() {
+  let html = '<h2>✏️ Edit Timetable</h2>';
+  APP.timetable.forEach((s, i) => {
+    html += `<div class="flex mb-8" style="gap:4px">
+      <input value="${s.time}" onchange="APP.timetable[${i}].time=this.value;saveData()" style="width:100px">
+      <input value="${s.subject}" onchange="APP.timetable[${i}].subject=this.value;saveData()" style="flex:1">
+      <input value="${s.topic}" onchange="APP.timetable[${i}].topic=this.value;saveData()" style="flex:1">
+    </div>`;
+  });
+  html += `<button class="btn btn-sm btn-primary mt-8" onclick="APP.timetable.push({time:'00:00-00:00',subject:'New',topic:'',done:false});renderAll();saveData();this.closest('.modal').querySelectorAll('.flex').length?null:null;showEditTimetable()">+ Add Slot</button>`;
+  html += `<button class="btn btn-sm btn-success mt-8" onclick="closeModal();renderAll()">Done</button>`;
+  const modal = document.getElementById('modalContent');
+  modal.innerHTML = html;
+  document.getElementById('modalOverlay').classList.add('active');
+}
+
+function resetTimetable() {
+  if (!confirm('Reset timetable to default?')) return;
+  APP.timetable = JSON.parse(JSON.stringify(DEFAULT_DATA.timetable));
+  saveData(); renderAll();
+}
+
+function rescheduleDay() {
+  const pending = APP.timetable.filter(s => !s.done);
+  if (pending.length === 0) return;
+  const now = new Date(new Date().toLocaleString('en-US', {timeZone:'Asia/Kolkata'}));
+  let hour = now.getHours() + 1;
+  pending.forEach(s => {
+    const end = Math.min(hour + 2, 24);
+    s.time = `${String(hour).padStart(2,'0')}:00-${String(end).padStart(2,'0')}:00`;
+    hour = end + 1;
+  });
+  saveData(); renderAll();
+}
+
+// STUDY LOCK
+let lockInterval = null;
+let lockSeconds = 0;
+let lockActive = false;
+let lockSubject = '';
+let lockTopicId = '';
+let callPaused = false;
+let breakClicked = false;
+
+function updateLockTopics() {
+  const sub = document.getElementById('lockSubject').value;
+  const sel = document.getElementById('lockTopic');
+  const topics = APP.topics.filter(t => t.subject === sub);
+  sel.innerHTML = topics.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+}
+
+function startLock() {
+  lockSubject = document.getElementById('lockSubject').value;
+  lockTopicId = document.getElementById('lockTopic').value;
+  const mins = parseInt(document.getElementById('lockDuration').value) || 120;
+  lockSeconds = mins * 60;
+  lockActive = true;
+  callPaused = false;
+  breakClicked = false;
+
+  const overlay = document.getElementById('lockOverlay');
+  overlay.classList.add('active');
+  
+  const topic = APP.topics.find(t => t.id === lockTopicId);
+  document.getElementById('lockSubjectDisplay').textContent = `${lockSubject.charAt(0).toUpperCase()+lockSubject.slice(1)} - ${topic ? topic.name : ''}`;
+  document.getElementById('lockMessage').textContent = getGrandparentMsg('lock');
+  document.getElementById('lockMainBtn').textContent = 'I\'M STUDYING 💪';
+  document.getElementById('lockMainBtn').onclick = lockMainAction;
+  document.getElementById('callPauseBtn').style.display = 'none';
+  document.getElementById('endStudyBtn').style.display = 'none';
+
+  document.getElementById('sessionTimer').textContent = formatTime(lockSeconds);
+  document.getElementById('lockStatus').textContent = '🔒 Studying...';
+  document.getElementById('sessionTimer').parentElement.style.color = '';
+
+  if (lockInterval) clearInterval(lockInterval);
+  lockInterval = setInterval(() => {
+    if (callPaused) return;
+    lockSeconds--;
+    document.getElementById('lockTimer').textContent = formatTime(lockSeconds);
+    document.getElementById('sessionTimer').textContent = formatTime(lockSeconds);
+    if (lockSeconds <= 0) {
+      clearInterval(lockInterval);
+      lockSeconds = 0;
+      endStudySession();
+    }
+  }, 1000);
+}
+
+function lockMainAction() {
+  // Just a motivational button, doesn't do much other than remind
+  document.getElementById('lockMessage').textContent = getGrandparentMsg('encourage');
+}
+
+function formatTime(secs) {
+  const h = Math.floor(secs/3600);
+  const m = Math.floor((secs%3600)/60);
+  const s = secs%60;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+function endStudySession() {
+  if (lockInterval) clearInterval(lockInterval);
+  document.getElementById('lockMainBtn').textContent = '✅ I STUDIED';
+  document.getElementById('lockMainBtn').onclick = startQuizFromLock;
+  document.getElementById('lockMessage').textContent = 'Click "I STUDIED" to prove you learned.';
+  document.getElementById('callPauseBtn').style.display = 'block';
+  document.getElementById('endStudyBtn').style.display = 'block';
+}
+
+function pauseForCall() {
+  callPaused = true;
+  document.getElementById('lockMessage').textContent = '📞 Call paused. Resume within 10 min.';
+  document.getElementById('callPauseBtn').textContent = '🔁 Resume';
+  document.getElementById('callPauseBtn').onclick = () => {
+    callPaused = false;
+    document.getElementById('lockMessage').textContent = 'Back to work! 📚';
+    document.getElementById('callPauseBtn').textContent = '📞 I Got a Call';
+    document.getElementById('callPauseBtn').onclick = pauseForCall;
+  };
+  setTimeout(() => {
+    if (callPaused) {
+      callPaused = false;
+      document.getElementById('lockMessage').textContent = '⏰ Call time over. Resume studying!';
+      document.getElementById('callPauseBtn').textContent = '📞 I Got a Call';
+      document.getElementById('callPauseBtn').onclick = pauseForCall;
+    }
+  }, 600000); // 10 min auto-resume
+}
+
+function startQuizFromLock() {
+  const modal = document.getElementById('modalContent');
+  const sub = lockSubject;
+  const topic = APP.topics.find(t => t.id === lockTopicId);
+  const topicName = topic ? topic.name : '';
+  const questions = APP.quizQuestions.filter(q => q.subject === sub);
+  
+  if (questions.length === 0) {
+    // If no questions, auto-pass
+    unlockSuccess();
+    return;
+  }
+
+  let currentQ = 0;
+  let level = 'basic';
+  let levelQs = questions.filter(q => q.level === level);
+  if (levelQs.length === 0) levelQs = questions;
+
+  modal.innerHTML = `<h2>❓ Quiz - ${sub.charAt(0).toUpperCase()+sub.slice(1)}</h2>
+    <p class="text-muted mb-16">Topic: ${topicName} | Answer correctly to unlock</p>
+    <div id="quizContent"></div>`;
+  
+  document.getElementById('modalOverlay').classList.add('active');
+  showQuizQuestion(0, levelQs);
+
+  function showQuizQuestion(idx, qs) {
+    if (idx >= qs.length) {
+      unlockSuccess();
+      return;
+    }
+    const q = qs[idx];
+    const content = document.getElementById('quizContent');
+    content.innerHTML = `
+      <div class="quiz-level level-${q.level}">${q.level.toUpperCase()}</div>
+      <div class="quiz-question">Q${idx+1}: ${q.q}</div>
+      <div class="form-group">
+        <input type="text" id="quizAnswer" placeholder="Type your answer..." onkeydown="if(event.key==='Enter')checkQuizAnswer(${idx}, '${q.level}')">
+      </div>
+      <button class="btn btn-primary" onclick="checkQuizAnswer(${idx}, '${q.level}')">Submit Answer</button>
+      <div id="quizFeedback"></div>
+    `;
+    document.getElementById('quizAnswer').focus();
+  }
+
+  window.checkQuizAnswer = function(idx, lvl) {
+    const answer = document.getElementById('quizAnswer').value.trim().toLowerCase();
+    const q = levelQs[idx];
+    const correct = q.a.toLowerCase();
+    
+    // Simple keyword matching
+    const keywords = correct.split(' ').filter(w => w.length > 3);
+    const matchCount = keywords.filter(k => answer.includes(k)).length;
+    const threshold = Math.max(1, Math.floor(keywords.length * 0.4));
+    const isCorrect = matchCount >= threshold;
+
+    const fb = document.getElementById('quizFeedback');
+    if (isCorrect) {
+      fb.innerHTML = `<div class="quiz-result pass">✅ Correct! Well done.</div>`;
+      setTimeout(() => showQuizQuestion(idx + 1, levelQs), 1000);
+    } else {
+      const revisionHtml = `<div class="quiz-result fail">
+        ❌ Wrong.<br><br>
+        <strong>Correct answer:</strong> ${q.a}<br><br>
+        <strong>🔒 10 MIN PENALTY + REVISION</strong><br>
+        Open ${topic ? topic.pages : 'your textbook'} and revise ${topicName || 'this topic'}.
+      </div>`;
+      fb.innerHTML = revisionHtml;
+      // 10 min penalty
+      lockSeconds += 600;
+      document.getElementById('lockTimer').textContent = formatTime(lockSeconds);
+      document.getElementById('sessionTimer').textContent = formatTime(lockSeconds);
+      // Show revision
+      setTimeout(() => {
+        document.getElementById('modalOverlay').classList.remove('active');
+        document.getElementById('lockOverlay').classList.add('active');
+        document.getElementById('lockMessage').innerHTML = `🔒 10 MIN PENALTY!<br>Revise: ${topic ? topic.pages : 'textbook'}<br>Topic: ${topicName || 'this topic'}<br>Grandpa says: "Wrong answer = more study. No shortcuts."`;
+      }, 2000);
+    }
+  };
+}
+
+function unlockSuccess() {
+  document.getElementById('modalOverlay').classList.remove('active');
+  document.getElementById('lockOverlay').classList.remove('active');
+  if (lockInterval) clearInterval(lockInterval);
+  lockActive = false;
+  
+  // Track study hours
+  const mins = parseInt(document.getElementById('lockDuration').value) || 120;
+  APP.studyHoursToday += mins/60;
+  
+  // Mark topic as done if studied
+  if (lockTopicId) {
+    const t = APP.topics.find(x => x.id === lockTopicId);
+    if (t && t.status === 'pending') t.status = 'done';
+  }
+  // Mark timetable slot
+  const now = new Date(new Date().toLocaleString('en-US', {timeZone:'Asia/Kolkata'}));
+  const hour = now.getHours();
+  const slot = APP.timetable.find(s => {
+    const start = parseInt(s.time.split('-')[0].split(':')[0]);
+    return Math.abs(start - hour) <= 2;
+  });
+  if (slot) slot.done = true;
+  
+  updateStreak();
+  logStudyDay();
+  saveData();
+  renderAll();
+
+  const modal = document.getElementById('modalContent');
+  modal.innerHTML = `
+    <h2>🎉 Unlocked!</h2>
+    <div style="text-align:center;padding:20px">
+      <div style="font-size:60px">🎉</div>
+      <h3 style="margin:12px 0;color:var(--green)">You Passed the Quiz!</h3>
+      <p class="text-muted">Great job, Rihan! You earned your break.</p>
+      <div class="flex" style="justify-content:center;gap:8px;margin-top:16px">
+        <button class="btn btn-success" onclick="startBreak('reward')">🍽️ Take Break</button>
+        <button class="btn btn-primary" onclick="startLock()">📚 Study Next</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('modalOverlay').classList.add('active');
+}
+
+// QUIZ TAB
+function loadQuizTopics() {
+  const sub = document.getElementById('quizSubject').value;
+  const sel = document.getElementById('quizTopic');
+  const topics = APP.topics.filter(t => t.subject === sub);
+  sel.innerHTML = topics.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+}
+
+let quizSession = { subject: '', questions: [], index: 0, score: 0, total: 0, level: 'basic' };
+
+function startQuiz() {
+  const sub = document.getElementById('quizSubject').value;
+  const topicId = document.getElementById('quizTopic').value;
+  const topic = APP.topics.find(t => t.id === topicId);
+  
+  let qs = APP.quizQuestions.filter(q => q.subject === sub);
+  if (qs.length === 0) {
+    document.getElementById('quizArea').innerHTML = '<p class="text-muted">No quiz questions for this subject yet.</p>';
+    return;
+  }
+
+  quizSession = { subject: sub, questions: shuf(qs), index: 0, score: 0, total: qs.length, level: 'basic' };
+  showNextQuizQuestion();
+}
+
+function shuf(a) { const b=[...a]; for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];} return b; }
+
+function showNextQuizQuestion() {
+  const qs = quizSession.questions;
+  if (quizSession.index >= qs.length) {
+    finishQuiz();
+    return;
+  }
+  const q = qs[quizSession.index];
+  const area = document.getElementById('quizArea');
+  const subj = quizSession.subject;
+  
+  area.innerHTML = `
+    <div style="border-top:1px solid var(--border);padding-top:16px;margin-top:16px">
+      <div class="flex-between">
+        <span class="quiz-level level-${q.level}">${q.level.toUpperCase()} | Q ${quizSession.index+1}/${qs.length}</span>
+        <span style="font-size:12px;color:var(--text2)">Score: ${quizSession.score}</span>
+      </div>
+      <div class="quiz-question mt-8">${q.q}</div>
+      <div class="form-group">
+        <input type="text" id="quizTabAnswer" placeholder="Type your answer..." onkeydown="if(event.key==='Enter')submitQuizAnswer()">
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="submitQuizAnswer()">Submit</button>
+      <div id="quizTabFeedback"></div>
+    </div>
+  `;
+  document.getElementById('quizTabAnswer').focus();
+}
+
+function submitQuizAnswer() {
+  const answer = document.getElementById('quizTabAnswer').value.trim().toLowerCase();
+  const q = quizSession.questions[quizSession.index];
+  const correct = q.a.toLowerCase();
+  
+  const keywords = correct.split(' ').filter(w => w.length > 3);
+  const threshold = Math.max(1, Math.floor(keywords.length * 0.3));
+  const matchCount = keywords.filter(k => answer.includes(k)).length;
+  const isCorrect = matchCount >= threshold;
+
+  const fb = document.getElementById('quizTabFeedback');
+  if (isCorrect) {
+    quizSession.score++;
+    fb.innerHTML = `<div class="quiz-result pass">✅ Correct!</div>`;
+  } else {
+    fb.innerHTML = `<div class="quiz-result fail">❌ Wrong<br><strong>Answer:</strong> ${q.a}</div>`;
+  }
+  quizSession.index++;
+  setTimeout(() => showNextQuizQuestion(), 1500);
+}
+
+function finishQuiz() {
+  const pct = Math.round((quizSession.score / quizSession.total) * 100);
+  const passed = pct >= 60;
+  const area = document.getElementById('quizArea');
+  area.innerHTML = `
+    <div style="border-top:1px solid var(--border);padding-top:16px;margin-top:16px;text-align:center">
+      <div style="font-size:40px;margin-bottom:8px">${passed ? '🎉' : '😤'}</div>
+      <h3>${passed ? 'Great Job!' : 'Keep Trying!'}</h3>
+      <p class="text-muted">Score: ${quizSession.score}/${quizSession.total} (${pct}%)</p>
+      ${passed ? '<p style="color:var(--green)">✅ You know your material!</p>' : '<p style="color:var(--red)">❌ Revise and try again. Weak areas shown below.</p>'}
+      <div class="flex" style="justify-content:center;gap:8px;margin-top:12px">
+        <button class="btn btn-primary btn-sm" onclick="startQuiz()">🔄 Try Again</button>
+        <button class="btn btn-outline btn-sm" onclick="switchTab('materials')">📖 Review Materials</button>
+      </div>
+    </div>
+  `;
+  if (!passed) {
+    // Show weak topics
+    const wrong = [];
+    quizSession.questions.forEach((q, i) => {
+      // approximation: show topics
+      wrong.push(q.q.substring(0,40)+'...');
+    });
+    area.innerHTML += `<div class="mt-8" style="background:var(--card2);padding:12px;border-radius:8px">
+      <strong style="color:var(--red)">Topics to revise:</strong>
+      <ul style="margin-top:8px;padding-left:16px;font-size:13px;color:var(--text2)">
+        ${wrong.slice(0,5).map(w => `<li>${w}</li>`).join('')}
+      </ul>
+    </div>`;
+  }
+}
+
+// PYQ
+function filterPYQ(sub, btn) {
+  document.querySelectorAll('[data-pyq]').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderPYQ(sub);
+}
+function renderPYQ(filter) {
+  filter = filter || 'all';
+  const el = document.getElementById('pyqList');
+  let qs = filter === 'all' ? APP.pyqs : APP.pyqs.filter(p => p.subject === filter);
+  if (qs.length === 0) {
+    el.innerHTML = '<p class="text-muted">No PYQs for this filter.</p>';
+    return;
+  }
+  let html = '';
+  qs.forEach(p => {
+    html += `<div class="pyq-item" onclick="togglePYQAnswer('${p.year}-${p.subject}-${p.q.substring(0,20)}')">
+      <div class="pyq-year">${p.subject.toUpperCase()} | ${p.year} | ${p.marks} marks</div>
+      <div class="pyq-q">${p.q}</div>
+      <div id="pyqAns-${p.year}-${p.subject}-${p.q.substring(0,20)}" class="pyq-answer">${p.answer}</div>
+    </div>`;
+  });
+  el.innerHTML = html;
+}
+
+function togglePYQAnswer(id) {
+  const el = document.getElementById('pyqAns-' + id);
+  if (el) el.classList.toggle('show');
+}
+
+// BREAK
+function startBreak(type) {
+  const popup = document.getElementById('breakPopup');
+  const title = { lunch:'🍚 Lunch Break', freshup:'🚿 Fresh-up Break', dinner:'🌙 Dinner Break', reward:'🎉 Reward Break' };
+  const msg = { lunch:'Grandpa says: "Eat well, study well." You have 60 min.', freshup:'Grandpa says: "Wash your face. Stay fresh." 30 min.', dinner:'Grandma says: "Dinner is ready. Come now." 45 min.', reward:'You earned this! 30 min break. Enjoy!' };
+  const times = { lunch:60, freshup:30, dinner:45, reward:30 };
+
+  document.getElementById('breakTitle').textContent = title[type] || 'Break Time';
+  document.getElementById('breakMsg').textContent = msg[type] || 'Time for a break!';
+  document.getElementById('breakPopup').classList.add('active');
+  breakClicked = true;
+
+  let secs = (times[type] || 30) * 60;
+  const timer = document.getElementById('breakTimer');
+  const interval = setInterval(() => {
+    secs--;
+    const m = Math.floor(secs/60);
+    const s = secs%60;
+    timer.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    if (secs <= 0) {
+      clearInterval(interval);
+      endBreak();
+    }
+  }, 1000);
+
+  window._breakInterval = interval;
+  window._breakTime = secs;
+}
+
+function endBreak() {
+  if (window._breakInterval) clearInterval(window._breakInterval);
+  document.getElementById('breakPopup').classList.remove('active');
+}
+
+function skipBreak() {
+  if (window._breakInterval) clearInterval(window._breakInterval);
+  document.getElementById('breakPopup').classList.remove('active');
+  APP.breakSkipped = true;
+  const modal = document.getElementById('modalContent');
+  modal.innerHTML = `
+    <h2>⏭️ Break Skipped</h2>
+    <p>Grandpa says: "Extra effort = extra marks."</p>
+    <p class="text-muted">60 min added to your next study block. +1 bonus quiz question.</p>
+    <button class="btn btn-primary btn-block mt-8" onclick="closeModal();switchTab('studylock')">📚 Back to Study</button>
+  `;
+  document.getElementById('modalOverlay').classList.add('active');
+  saveData();
+}
+
+// WORKOUT
+function renderWorkout() {
+  const el = document.getElementById('workoutList');
+  let html = '';
+  APP.workout.forEach((w, i) => {
+    html += `<div class="workout-item">
+      <input type="checkbox" ${w.done?'checked':''} onchange="toggleWorkout(${i})">
+      <div style="flex:1"><strong>${w.name}</strong> <span style="color:var(--text2);font-size:12px">${w.reps}</span></div>
+      ${w.done ? '<span style="color:var(--green)">✅</span>' : ''}
+    </div>`;
+  });
+  el.innerHTML = html;
+  const done = APP.workout.filter(w => w.done).length;
+  document.getElementById('workoutProgress').textContent = `${done}/${APP.workout.length} done`;
+}
+
+function toggleWorkout(i) {
+  APP.workout[i].done = !APP.workout[i].done;
+  saveData();
+  renderWorkout();
+}
+
+function resetWorkout() {
+  APP.workout.forEach(w => w.done = false);
+  saveData();
+  renderWorkout();
+}
+
+// AI
+function updateAIStatus() {
+  const el = document.getElementById('aiStatus');
+  if (APP.settings.geminiKey) el.textContent = 'Gemini configured ✅';
+  else if (APP.settings.groqKey) el.textContent = 'Groq configured ✅';
+  else el.textContent = 'Not configured ❌';
+}
+
+function sendChat() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+
+  const box = document.getElementById('chatBox');
+  box.innerHTML += `<div class="chat-msg user">${msg}</div>`;
+  box.scrollTop = box.scrollHeight;
+
+  // Try AI, fallback to local
+  if (APP.settings.geminiKey) {
+    callGemini(msg);
+  } else if (APP.settings.groqKey) {
+    callGroq(msg);
+  } else {
+    // Local answer
+    setTimeout(() => {
+      const answer = localAnswer(msg);
+      box.innerHTML += `<div class="chat-msg ai">${answer}</div>`;
+      box.scrollTop = box.scrollHeight;
+    }, 500);
+  }
+}
+
+function localAnswer(q) {
+  const ql = q.toLowerCase();
+  // Find relevant topic
+  const topics = APP.topics.filter(t => ql.includes(t.name.toLowerCase()));
+  const pyq = APP.pyqs.filter(p => ql.includes(p.subject));
+  
+  let context = '';
+  if (topics.length > 0) {
+    context = `\n\n📖 Based on ${topics[0].name} (${topics[0].pages}): This topic covers ${topics[0].name}. Focus on key formulas and concepts from SCERT +2.`;
+  }
+  
+  // Check quiz questions for answer
+  const match = APP.quizQuestions.find(qq => ql.includes(qq.q.substring(0,15).toLowerCase()));
+  if (match) return `📚 ${match.q}\n\nAnswer: ${match.a}${context}`;
+  
+  // Check PYQ
+  const pyqMatch = APP.pyqs.find(p => ql.includes(p.q.substring(0,20).toLowerCase()));
+  if (pyqMatch) return `📄 Previous Year (${pyqMatch.year}): ${pyqMatch.q}\n\nAnswer: ${pyqMatch.answer}${context}`;
+  
+  return `🤔 Good question! Here's what I know:\n\nBased on your SAY syllabus:\n- Check SCERT +2 textbook\n- This topic could be related to ${topics.length > 0 ? topics[0].name : 'the chapter you\'re studying'}\n- Practice numerical problems and derivations\n\nWant me to explain a specific concept? Paste your study material notes and I'll help!${context}`;
+}
+
+async function callGemini(msg) {
+  const box = document.getElementById('chatBox');
+  const context = APP.topics.filter(t => t.status==='done').map(t => t.name+': '+t.pages).join(', ');
+  const prompt = `You are a strict but kind teacher helping MUHAMMED RIHAN T prepare for Kerala HSE SAY 2026 exam. His subjects: Physics (need 16 marks), Chemistry (need 1 mark), Maths (need 3 marks). His study topics: ${context || 'All 13 topics'}. Answer this doubt clearly and simply: ${msg}`;
+  
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${APP.settings.geminiKey}`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({contents:[{parts:[{text:prompt}]}]})
+    });
+    const data = await res.json();
+    const answer = data?.candidates?.[0]?.content?.parts?.[0]?.text || 'Sorry, could not get answer.';
+    box.innerHTML += `<div class="chat-msg ai">${answer}</div>`;
+  } catch(e) {
+    box.innerHTML += `<div class="chat-msg ai">⚠️ API error: ${e.message}. Using local answer.</div>`;
+    const ans = localAnswer(msg);
+    box.innerHTML += `<div class="chat-msg ai">${ans}</div>`;
+  }
+  box.scrollTop = box.scrollHeight;
+}
+
+async function callGroq(msg) {
+  const box = document.getElementById('chatBox');
+  const context = APP.topics.filter(t => t.status==='done').map(t => t.name+': '+t.pages).join(', ');
+  const prompt = `You are a strict teacher helping MUHAMMED RIHAN T with Kerala HSE SAY 2026. Subjects: Physics (16 marks needed), Chemistry (1 mark), Maths (3 marks). Topics: ${context || 'All'}. Answer: ${msg}`;
+  
+  try {
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json', 'Authorization':`Bearer ${APP.settings.groqKey}`},
+      body: JSON.stringify({model:'mixtral-8x7b-32768',messages:[{role:'user',content:prompt}]})
+    });
+    const data = await res.json();
+    const answer = data?.choices?.[0]?.message?.content || 'Sorry, could not get answer.';
+    box.innerHTML += `<div class="chat-msg ai">${answer}</div>`;
+  } catch(e) {
+    box.innerHTML += `<div class="chat-msg ai">⚠️ API error: ${e.message}. Using local answer.</div>`;
+    const ans = localAnswer(msg);
+    box.innerHTML += `<div class="chat-msg ai">${ans}</div>`;
+  }
+  box.scrollTop = box.scrollHeight;
+}
+
+// PROGRESS
+function renderProgress() {
+  const subjects = { physics:{name:'Physics',needed:16,target:30,emoji:'⚡'}, chemistry:{name:'Chemistry',needed:1,target:24,emoji:'🧪'}, maths:{name:'Maths',needed:3,target:26,emoji:'📐'} };
+  const el = document.getElementById('subjectMastery');
+  let html = '';
+  for (let [k, sub] of Object.entries(subjects)) {
+    const topics = APP.topics.filter(t => t.subject === k);
+    const done = topics.filter(t => t.status === 'done').length;
+    const pct = topics.length > 0 ? Math.round((done/topics.length)*100) : 0;
+    html += `<div class="mb-8">
+      <div class="flex-between"><span>${sub.emoji} ${sub.name}</span><span style="font-size:12px;color:var(--text2)">${done}/${topics.length} (${pct}%)</span></div>
+      <div class="progress-bar"><div class="progress-fill ${pct>=80?'green':pct>=50?'':'red'}" style="width:${pct}%"></div></div>
+      <span style="font-size:11px;color:var(--text2)">Need ${sub.needed} marks | ${pct>=100?'✅ Ready':'⏳ In progress'}</span>
+    </div>`;
+  }
+  el.innerHTML = html;
+  document.getElementById('progressStreak').textContent = APP.streaks;
+
+  // Stats
+  const el2 = document.getElementById('studyStats');
+  const total = APP.topics.length;
+  const done = APP.topics.filter(t => t.status === 'done').length;
+  el2.innerHTML = `
+    <div class="grid-3">
+      <div class="stat"><div class="stat-num">${Math.round(APP.studyHoursToday)}h</div><div class="stat-label">Studied Today</div></div>
+      <div class="stat"><div class="stat-num">${done}/${total}</div><div class="stat-label">Topics Done</div></div>
+      <div class="stat"><div class="stat-num">${APP.streaks}</div><div class="stat-label">Day Streak</div></div>
+    </div>
+  `;
+
+  // Heatmap
+  renderHeatmap();
+}
+
+let heatMonth = 5; // May
+let heatYear = 2026;
+
+function changeHeatMonth(delta) {
+  heatMonth += delta;
+  if (heatMonth < 1) { heatMonth = 1; }
+  if (heatMonth > 7) { heatMonth = 7; }
+  renderHeatmap();
+}
+
+function renderHeatmap() {
+  const el = document.getElementById('heatmap');
+  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('heatMonth').textContent = `${monthNames[heatMonth-1]} ${heatYear}`;
+  
+  const daysInMonth = new Date(heatYear, heatMonth, 0).getDate();
+  const firstDay = new Date(heatYear, heatMonth-1, 1).getDay();
+  
+  el.innerHTML = '';
+  // Empty cells for offset
+  for (let i = 0; i < (firstDay === 0 ? 6 : firstDay - 1); i++) {
+    const d = document.createElement('div');
+    d.className = 'heat-day';
+    el.appendChild(d);
+  }
+  
+  for (let day = 1; day <= daysInMonth; day++) {
+    const d = document.createElement('div');
+    const dateStr = `${heatYear}-${String(heatMonth).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const intensity = APP.heatmapData[dateStr] || 0;
+    d.className = `heat-day heat-${Math.min(intensity,4)}`;
+    d.dataset.tip = `${dateStr}: ${intensity > 0 ? intensity + 'hr studied' : 'No study'}`;
+    el.appendChild(d);
+  }
+}
+
+function logStudyDay() {
+  const now = new Date(new Date().toLocaleString('en-US', {timeZone:'Asia/Kolkata'}));
+  const dateStr = now.toISOString().split('T')[0];
+  APP.heatmapData[dateStr] = (APP.heatmapData[dateStr] || 0) + 1;
+  saveData();
+  renderHeatmap();
+}
+
+function updateStreak() {
+  const now = new Date(new Date().toLocaleString('en-US', {timeZone:'Asia/Kolkata'}));
+  const today = now.toISOString().split('T')[0];
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yStr = yesterday.toISOString().split('T')[0];
+  
+  if (APP.lastStudyDate === today) return;
+  if (APP.lastStudyDate === yStr) { APP.streaks++; }
+  else if (APP.lastStudyDate !== today) { APP.streaks = 1; }
+  APP.lastStudyDate = today;
+  saveData();
+}
+
+// CERTIFICATE
+function renderCertificate() {
+  const el = document.getElementById('certRequirements');
+  const doneTopics = APP.topics.filter(t => t.status==='done').length;
+  const totalTopics = APP.topics.length;
+  const allTopicsDone = doneTopics >= totalTopics;
+  const streakOk = APP.streaks >= 7;
+  const certReady = allTopicsDone && streakOk;
+
+  el.innerHTML = `
+    <div class="grid-3">
+      <div class="stat ${allTopicsDone?'stat-green':'stat-red'}">
+        <div class="stat-num">${doneTopics}/${totalTopics}</div>
+        <div class="stat-label">All Topics Revised ${allTopicsDone?'✅':''}</div>
+      </div>
+      <div class="stat ${streakOk?'stat-green':'stat-red'}">
+        <div class="stat-num">${APP.streaks}/7</div>
+        <div class="stat-label">7-Day Streak ${streakOk?'✅':''}</div>
+      </div>
+      <div class="stat ${certReady?'stat-green':'stat-red'}">
+        <div class="stat-num">${certReady?'🎓':'🔒'}</div>
+        <div class="stat-label">${certReady?'Unlocked!':'Locked'}</div>
+      </div>
+    </div>
+  `;
+
+  const certEl = document.getElementById('certDisplay');
+  if (certReady && !APP.certificateUnlocked) {
+    APP.certificateUnlocked = true;
+    saveData();
+  }
+
+  if (APP.certificateUnlocked) {
+    certEl.innerHTML = `
+      <div class="certificate" id="certificateContent">
+        <div class="seal">🎓</div>
+        <h1>CERTIFICATE OF ACHIEVEMENT</h1>
+        <div class="badge">★ SAY 2026 ★</div>
+        <h2>MUHAMMED RIHAN T</h2>
+        <p>Reg No: 25371123</p>
+        <p style="font-size:13px;color:#94a3b8;margin:12px 0">For successfully completing the SAY 2026 study program</p>
+        <p style="font-size:13px;color:#94a3b8">All 13 topics revised | Consistent study streak | Ready for exam</p>
+        <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.1)">
+          <p style="font-size:11px;color:#64748b">Issued: ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})}</p>
+          <p style="font-size:11px;color:#64748b">"Hard work beats talent when talent doesn't work hard."</p>
+        </div>
+        <button class="btn btn-primary btn-sm mt-16" onclick="downloadCertificate()">📥 Download Certificate</button>
+      </div>
+    `;
+  } else if (certReady) {
+    certEl.innerHTML = `<div class="text-center" style="padding:20px"><div style="font-size:60px">🎓</div><h3>Certificate Ready to Unlock!</h3><p class="text-muted">Keep up your streak. You're almost there!</p></div>`;
+  } else {
+    certEl.innerHTML = `<div class="text-center" style="padding:20px"><div style="font-size:50px">🔒</div><h3>Certificate Locked</h3><p class="text-muted">Complete all topics and maintain a 7-day streak to unlock.</p></div>`;
+  }
+}
+
+function downloadCertificate() {
+  const cert = document.getElementById('certificateContent');
+  if (!cert) return;
+  const html = `
+<html><head><style>
+body{background:#0f172a;display:flex;justify-content:center;align-items:center;min-height:100vh;font-family:'Georgia',serif;margin:0;padding:20px}
+.cert{border:4px solid #eab308;border-radius:20px;padding:60px 40px;max-width:700px;text-align:center;background:linear-gradient(135deg,#1a1a2e,#16213e,transparent);color:#fff}
+h1{font-size:32px;color:#eab308;margin-bottom:8px}
+.seal{font-size:72px}
+.badge{background:#eab308;color:#000;padding:8px 24px;border-radius:20px;display:inline-block;font-weight:700;margin:12px 0}
+h2{font-size:26px;margin:8px 0}
+p{color:#94a3b8;font-size:14px;margin:4px 0}
+.line{border-top:1px solid rgba(255,255,255,0.1);margin-top:20px;padding-top:16px}
+.footer{font-size:11px;color:#64748b}
+</style></head><body>
+${cert.outerHTML}
+</body></html>`;
+  
+  const blob = new Blob([html], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'SAY-2026-Certificate.html';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// SETTINGS
+function saveSettings() {
+  APP.user.name = document.getElementById('userName').value || 'MUHAMMED RIHAN T';
+  APP.user.regNo = document.getElementById('userReg').value || '25371123';
+  APP.settings.strictness = document.getElementById('strictness').value;
+  APP.settings.geminiKey = document.getElementById('geminiKey').value;
+  APP.settings.groqKey = document.getElementById('groqKey').value;
+  saveData();
+  updateAIStatus();
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(APP, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'SAY-2026-Backup.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      APP = data;
+      saveData();
+      renderAll();
+      closeModal();
+      alert('Data imported successfully!');
+    } catch(err) {
+      alert('Invalid file format.');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function resetAll() {
+  APP = JSON.parse(JSON.stringify(DEFAULT_DATA));
+  saveData();
+  renderAll();
+  closeModal();
+}
+
+// UTILITY
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('active');
+}
+document.getElementById('modalOverlay').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+function getGrandparentMsg(type) {
+  const msgs = {
+    lock: [
+      'Grandpa says: "Phone lock aayi. Padikkyada. 20 mark illel life poyida."',
+      'Grandma says: "I\'m watching you. No phone until you finish."',
+      'Strict teacher says: "You need 20 marks. Focus now."',
+      'Brother says: "Don\'t embarrass us. Study properly."',
+      'Mon, you need 16 marks in Physics. No phone until you answer.'
+    ],
+    encourage: [
+      'You can do this! Keep going! 💪',
+      '20 marks. That\'s all. You got this!',
+      'Grandpa is proud. Keep studying!',
+      'Remember: "Hard work beats talent."',
+      'Every minute counts towards your 20 marks!'
+    ]
+  };
+  const arr = msgs[type] || msgs.lock;
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+// ========== INIT ==========
+renderAll();
+updateClock();
+setInterval(renderAll, 30000); // auto-refresh
+
+console.log('🎯 SAY 2026 Study Dashboard loaded');
+console.log('👤 MUHAMMED RIHAN T | 25371123');
+console.log('📅 Exam: June 29 - July 3, 2026');
+console.log('🎯 Target: 20 marks to pass');
+</script>
+</body>
+</html>
